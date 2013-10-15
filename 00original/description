@@ -1,5 +1,8 @@
 Holds the original images, some as softlinks, other as real files.
 
+The cases come from two different sources, the HEOPKS and JGABLENTZ image collections,
+but they all depict ischemic stroke lesions.
+
 One sub-folder per case, each with four image files:
 	adc_tra.nii.gz
 	dw_tra_b1000_dmean.nii.gz
