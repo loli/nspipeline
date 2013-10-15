@@ -1,0 +1,9 @@
+Holds the original images, some as softlinks, other as real files.
+
+One sub-folder per case, each with four image files:
+	adc_tra.nii.gz
+	dw_tra_b1000_dmean.nii.gz
+	flair_tra.nii.gz
+	t2_sag_tse.nii.gz
+
+All image with their original size and spacing and float64 datatype.
