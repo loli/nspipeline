@@ -5,12 +5,15 @@
 ########################################
 
 ## changelog
+# 2013-10-15 Added new directories and made emptydircond a tick more save
 # 2013-10-02 created
 
 # folders
 originals="00original/"
+t2space="01t2space/"
 
 scripts="scripts/"
+configs="configs/"
 
 # image arrays
 images=('01' '02' '03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '14' '15' '16' '17' '18' '19' '20' '21' '22')
@@ -23,7 +26,7 @@ imgfiletype="nii.gz"
 threadcount=4
 
 # logging
-loglevel=2 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
+loglevel=1 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
 logprefixes=('DEBUG' 'INFO' 'WARNING' 'ERROR')
 logprintlocation=false # true | false to print the location from where the log was triggered
 
@@ -108,10 +111,14 @@ function mkdircond {
 function emptydircond {
 	directory=${1}
 
-	filecount=`ls -al ${directory} | wc -l`
-	if [ "$filecount" -gt "3" ]
-	then
-		rm ${directory}/*
+	if [ -z "$directory" ]; then
+		log 3 "Supplied an empty string to emptydircond function. This might be dangerous and is therefore ignored." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	else
+		filecount=`ls -al ${directory} | wc -l`
+		if [ "$filecount" -gt "3" ]
+		then
+			rm ${directory}/*
+		fi
 	fi
 }
 
