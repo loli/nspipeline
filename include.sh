@@ -11,6 +11,7 @@
 # folders
 originals="00original/"
 t2space="01t2space/"
+t2skullstripped="02t2skullstripped/"
 
 scripts="scripts/"
 configs="configs/"

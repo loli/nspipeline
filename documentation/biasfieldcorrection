@@ -1,0 +1,25 @@
+
+Note: it seems that most tools (like imiLib and FSL) work better when the skull has been stripped before.
+
+Note: the bias fields produced by the tools differ greatly; how to determine the best one?
+
+Using CMTK
+##########
+Tested on two T2 volumes (03 + 06) with skull present.
+The results are promising, with a long (20+min) runtime.
+
+Tested on two T2 volumes (04 + 12) with skull absent.
+The results are promising, with a long (20+min) runtime.
+
+Using imiLib
+############
+Tested on two T2 volumes (03 + 06) with skull present.
+The results are promising, with a medium runtime (~3min).
+
+Tested on two T2 volumes (04 + 12) with skull absent.
+The results are promising, with a medium runtime (~3min).
+
+Using FSL (FAST)
+################
+Tested on two T2 volumes (03 + 06) with skull present.
+The results are promising, with a long (20+min) runtime.
