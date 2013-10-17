@@ -12,6 +12,7 @@
 originals="00original/"
 t2space="01t2space/"
 t2skullstripped="02t2skullstripped/"
+t2biasfieldcorrected="03t2biasfieldcorrected/"
 
 scripts="scripts/"
 configs="configs/"
