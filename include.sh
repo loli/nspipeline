@@ -14,6 +14,9 @@ t2space="01t2space/"
 t2skullstripped="02t2skullstripped/"
 t2biasfieldcorrected="03t2biasfieldcorrected/"
 
+segmentations="100segmentations/"
+t2segmentations="101t2segmentations/"
+
 scripts="scripts/"
 configs="configs/"
 
