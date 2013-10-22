@@ -2,6 +2,10 @@
 ##################
 todo.txt
 
+# Pickle Python classes #
+#########################
+*.pkl
+
 # Images #
 ##########
 *.dcm

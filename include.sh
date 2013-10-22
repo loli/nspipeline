@@ -5,6 +5,8 @@
 ########################################
 
 ## changelog
+# 2013-10-22 Added new directories.
+# 2013-10-21 Added new directories.
 # 2013-10-15 Added new directories and made emptydircond a tick more save
 # 2013-10-02 created
 
@@ -13,6 +15,7 @@ originals="00original/"
 t2space="01t2space/"
 t2skullstripped="02t2skullstripped/"
 t2biasfieldcorrected="03t2biasfieldcorrected/"
+t2intensitrangestandardization="04t2intensitrangestandardization/"
 
 segmentations="100segmentations/"
 t2segmentations="101t2segmentations/"
