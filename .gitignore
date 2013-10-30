@@ -2,9 +2,10 @@
 ##################
 todo.txt
 
-# Pickle Python classes #
-#########################
+# Pickle Python classes and NumpPy arrays #
+###########################################
 *.pkl
+*.npy
 
 # Images #
 ##########

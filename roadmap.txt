@@ -2,21 +2,22 @@ XXsmoothed
 ##########
 No smoothing of the image. It got decided to smooth the image as a pre-processing step where required but otherwise leave it as it is.
 
-02t2skullstripped
-#################
-Use: 	BET2 (from FSL) or SPM or cmtk on the T2 image for this.
-Save: 	(1) skull-stripped versions of the images in T2 space and (2) the brain-masks in T2 space.
+05t2lesionlocations
+###################
+Extract features from the images in t2space.
+Use RFs trained on all other images (i.e. leave-one-out) to roughly detect the lesion locations.
+Postprocess the results with morphological operations.
+Visually check results and decide, whether some growing or shirinking of the lesion area will be required.
 
-03t2inhomogeneityremoval
-########################
-Use:	FSL? or are there other possibilities?
-Doubts:	Do I have to calculate the bias field for one sequence and then apply it to all OR do it for each sequence individually?
-Save:	(1) The bias corrected images in T2 space and (2) the bias field(s) in T2 space
+Implement such, that the extracted features and the trained RFs can be re-used.
 
-04t2intensitrangestandardization
-################################
-Use:	My algorithm. For each volume train a intensity-space-model from the images of the same sequence from all other cases and apply it to the current image
-Save:	(1) The intensity corrected versions of the images in T2 space
+Evalute segmentation results over all images, to have a statistical measure of the classifiers performance.
+
+Extracting features:
+####################
+Use only a simple set of the most discriminating features. Check this using the example of 5 classifiers in the Playground.
+Features:
+
 
 
 
