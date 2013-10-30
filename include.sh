@@ -16,6 +16,7 @@ t2space="01t2space/"
 t2skullstripped="02t2skullstripped/"
 t2biasfieldcorrected="03t2biasfieldcorrected/"
 t2intensitrangestandardization="04t2intensitrangestandardization/"
+t2lesionsegmentation="05t2lesionsegmentation/"
 
 segmentations="100segmentations/"
 t2segmentations="101t2segmentations/"
@@ -31,7 +32,7 @@ sequences=("flair_tra" "dw_tra_b1000_dmean" "adc_tra" "t2_sag_tse") # keep the o
 imgfiletype="nii.gz"
 #stdspace=('0.44921875' '0.44921875' '0.99999148') # the minimal common space of all spectra
 
-threadcount=4
+threadcount=6
 
 # logging
 loglevel=1 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
