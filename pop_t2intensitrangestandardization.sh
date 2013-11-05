@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2010-11-05 adapted to new brain mask location
 # 2010-10-22 created
 
 # include shared information
@@ -33,7 +34,7 @@ for s in "${sequences[@]}"; do
 		fi
 		# add image to list of images to use for training (always use all images)
 		images_string="${images_string} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype}"
-		masks_string="${masks_string} ${t2skullstripped}/${i}/t2_sag_tse_mask.${imgfiletype}"
+		masks_string="${masks_string} ${t2brainmasks}/${i}.${imgfiletype}"
 	done
 
 	# train the model without transforming the images
@@ -43,7 +44,7 @@ for s in "${sequences[@]}"; do
 	# transform and post-process the images, them move them to their target location
 	for i in "${images[@]}"; do
 		mkdircond ${t2intensitrangestandardization}/${i}
-		cmd="medpy_intensity_range_standardization.py --load-model ${t2intensitrangestandardization}/intensity_model_${s}.pkl --masks ${t2skullstripped}/${i}/t2_sag_tse_mask.${imgfiletype} --save-images ${tmpdir} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
+		cmd="medpy_intensity_range_standardization.py --load-model ${t2intensitrangestandardization}/intensity_model_${s}.pkl --masks ${t2brainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
 		$cmd
 		cmd="${scripts}/condenseoutliers.py ${tmpdir}/${s}.${imgfiletype} ${t2intensitrangestandardization}/${i}/${s}.${imgfiletype}"
 		$cmd

@@ -20,8 +20,9 @@ t2intensitrangestandardization="04t2intensitrangestandardization/"
 t2lesionsegmentation="05t2lesionsegmentation/"
 stdspace="06stdspace"
 
-segmentations="100segmentations/"
+segmentations="100gtsegmentations/"
 t2segmentations="101t2segmentations/"
+t2brainmasks="102t2brainmasks/"
 
 scripts="scripts/"
 configs="configs/"

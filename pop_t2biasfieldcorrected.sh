@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2010-11-04 imporved code
 # 2010-10-17 created
 
 # include shared information
@@ -12,16 +13,16 @@ source $(dirname $0)/include.sh
 
 # main code
 log 2 "Correcting the bias fields" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for ((i = 0; i < ${#images[@]}; i++)); do
-	mkdircond ${t2biasfieldcorrected}/${images[$i]}
+for i in "${images[@]}"; do
+	mkdircond ${t2biasfieldcorrected}/${i}
 	for s in "${sequences[@]}"; do
 
 		# continue if target file already exists
-		if [ -f "${t2biasfieldcorrected}/${images[$i]}/${s}.${imgfiletype}" ]; then
+		if [ -f "${t2biasfieldcorrected}/${i}/${s}.${imgfiletype}" ]; then
 			continue
 		fi
 		
-		cmd="cmtk mrbias --mask ${t2skullstripped}/${images[$i]}/t2_sag_tse_mask.${imgfiletype} ${t2skullstripped}/${images[$i]}/${s}.${imgfiletype} ${t2biasfieldcorrected}/${images[$i]}/${s}.${imgfiletype}"
+		cmd="cmtk mrbias --mask ${t2brainmasks}/${i}.${imgfiletype} ${t2skullstripped}/${i}/${s}.${imgfiletype} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype}" # note: already multitasking
 		$cmd > /dev/null
 
 	done

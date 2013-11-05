@@ -6,6 +6,7 @@
 #####
 
 ## Changelog
+# 2010-11-04 Improved the mechanism and seperated the brain mask location from the skull-stripped images.
 # 2010-10-16 created
 
 # include shared information
@@ -13,38 +14,34 @@ source $(dirname $0)/include.sh
 
 # main code
 log 2 "Computing brain mask on T2" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-tmpdir=`mktemp -d`
-for ((i = 0; i < ${#images[@]}; i++)); do
-	mkdircond ${t2skullstripped}/${images[$i]}
-
+function compute_brainmask ()
+{
+	# grab parameters
+	i=$1
+	# created required directories
+	mkdircond ${t2skullstripped}/${i}
 	# continue if target file already exists
-	if [ -f "${t2skullstripped}/${images[$i]}/t2_sag_tse.${imgfiletype}" ]; then
-		continue
+	if [ -f "${t2brainmasks}/${i}.${imgfiletype}" ]; then
+		return
 	fi
-
-	cmd="fsl5.0-bet ${t2space}/${images[$i]}/t2_sag_tse.${imgfiletype} ${t2skullstripped}/${images[$i]}/t2_sag_tse.${imgfiletype} -m -R"
+	# compute brain mask
+	cmd="fsl5.0-bet ${t2space}/${i}/t2_sag_tse.${imgfiletype} ${t2skullstripped}/${i}/t2_sag_tse.${imgfiletype} -m -R"
 	$cmd > /dev/null
-
-	emptydircond ${tmpdir}
-done
-rmdircond ${tmpdir}
+	cmd="mv ${t2skullstripped}/${i}/t2_sag_tse_mask.${imgfiletype} ${t2brainmasks}/${i}.${imgfiletype}"
+	$cmd
+}
+parallelize compute_brainmask ${threadcount} images[@]
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 
 log 2 "Applying brainmask to other spectra" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for ((i = 0; i < ${#images[@]}; i++)); do
-	mkdircond ${t2skullstripped}/${images[$i]}
+for i in "${images[@]}"; do
 	for s in "${sequences[@]}"; do
-		# catch T2 since it has been already processed
-		if [ "${s}" == "t2_sag_tse" ]; then
-			continue
-		fi
-
 		# continue if target file already exists
-		if [ -f "${t2skullstripped}/${images[$i]}/${s}.${imgfiletype}" ]; then
+		if [ -f "${t2skullstripped}/${i}/${s}.${imgfiletype}" ]; then
 			continue
 		fi
 
-		cmd="${scripts}/apply_binary_mask.py ${t2space}/${images[$i]}/${s}.${imgfiletype} ${t2skullstripped}/${images[$i]}/t2_sag_tse_mask.${imgfiletype} ${t2skullstripped}/${images[$i]}/${s}.${imgfiletype}"
+		cmd="${scripts}/apply_binary_mask.py ${t2space}/${i}/${s}.${imgfiletype} ${t2brainmasks}/${i}.${imgfiletype} ${t2skullstripped}/${i}/${s}.${imgfiletype}"
 		$cmd > /dev/null
 	done
 done
