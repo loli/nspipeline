@@ -5,8 +5,9 @@
 #####
 
 ## Changelog
+# 2013-11-06 added an additional step, correcting precision errors in the image header
 # 2013-11-05 optimized
-# 2010-10-21 created
+# 2013-10-21 created
 
 # include shared information
 source $(dirname $0)/include.sh
@@ -15,7 +16,7 @@ source $(dirname $0)/include.sh
 log 2 "Tranforming all expert segmentation to T2 space" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 tmpdir=`mktemp -d`
 for i in "${images[@]}"; do
-	
+
 	# continue if target file already exists
 	if [ -f "${t2segmentations}/${i}.${imgfiletype}" ]; then
 		continue
@@ -32,6 +33,10 @@ for i in "${images[@]}"; do
 
 	# copy transformed binary segmentation file
 	cmd="mv ${tmpdir}/result.${imgfiletype} ${t2segmentations}/${i}.${imgfiletype}"
+	$cmd
+
+	# adapt header, as eslatix seems to use another precision, which might lead to error later
+	cmd="${scripts}/pass_header.py ${t2segmentations}/${i}.${imgfiletype} ${t2space}/${i}/t2_sag_tse.${imgfiletype}"
 	$cmd
 
 	emptydircond ${tmpdir}
