@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2013-11-11 Added new directories.
 # 2013-10-31 Added new directories.
 # 2013-10-22 Added new directories.
 # 2013-10-21 Added new directories.
@@ -19,10 +20,17 @@ t2biasfieldcorrected="03t2biasfieldcorrected/"
 t2intensitrangestandardization="04t2intensitrangestandardization/"
 t2lesionsegmentation="05t2lesionsegmentation/"
 stdspace="06stdspace"
+stdskullstripped="07stdskullstripped/"
+stdbiasfieldcorrected="08stdbiasfieldcorrected/"
+stdintensitrangestandardization="09stdintensitrangestandardization/"
+stdlesionsegmentation="10stdlesionsegmentation/"
+
 
 segmentations="100gtsegmentations/"
 t2segmentations="101t2segmentations/"
 t2brainmasks="102t2brainmasks/"
+stdsegmentations="103stdsegmentations/"
+stdbrainmasks="104stdbrainmasks/"
 
 scripts="scripts/"
 configs="configs/"

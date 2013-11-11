@@ -19,7 +19,7 @@ for f in "${1}"/*.nii.gz; do
 done
 
 echo "Displaying images..."
-amide ${tmpdir}/t2_sag_tse.nii ${tmpdir}/*.nii
+amide ${tmpdir}/t2_sag_tse.nii ${tmpdir}/*.nii ${tmpdir}/*.nii
 
 echo "Cleaning up..."
 rm ${tmpdir}/*
