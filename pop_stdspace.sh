@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2013-11-11 changed to no combine the two registration steps, but rather executing them one after another
 # 2013-11-07 fixed problem with SPM using sform instead of qform information
 # 2013-11-06 added saveguard for when target file(s) already exist
 # 2013-11-01 minor changes for bug-fixing
@@ -17,7 +18,7 @@ source $(dirname $0)/include.sh
 tmpdir=`mktemp -d`
 
 for i in "${images[@]}"; do
-	log 2 "Processing case ${i}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	log 2 "Procesing case ${i}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	mkdircond ${stdspace}/${i}
 
 	# continue if target file already exists (making assumption from T2 to all sequences)
@@ -25,15 +26,11 @@ for i in "${images[@]}"; do
 		continue
 	fi
 
-	log 2 "Unpacking original images to .nii format and correct sform" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	log 2 "Unpacking t2space images to .nii format and correct sform" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	for seq in "${sequences[@]}"; do
-		cmd="${scripts}/correct_sform.py ${originals}/${i}/${seq}.${imgfiletype} ${tmpdir}/${seq}.nii"
+		cmd="${scripts}/correct_sform.py ${t2space}/${i}/${seq}.${imgfiletype} ${tmpdir}/${seq}.nii"
 		$cmd
 	done
-
-	log 2 "For T2 sequence, use isospaced image instead" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="${scripts}/correct_sform.py ${t2space}/${i}/t2_sag_tse.${imgfiletype} ${tmpdir}/t2_sag_tse.nii -f"
-	$cmd
 
 	log 2 "Create inverses of preliminary lesion mask in T2 space" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	cmd="${scripts}/invert.py ${t2segmentations}/${i}.${imgfiletype} ${tmpdir}/_lesion_mask.nii"
@@ -52,22 +49,18 @@ for i in "${images[@]}"; do
 	cmd="${scripts}/check_spm_normalize_estimate_log.py ${tmpdir}/log 15"
 	$cmd
 
-	log 2 "Create matlab scripts that modify the transformation parameters to include the inter-sequence registration performed by elastix and execute them" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	for seq in "${sequences[@]}"; do
-		if [ "${seq}" == "t2_sag_tse" ]; then
-			continue
-		fi
-		cmd="${scripts}/prepare_combination_of_transformation_matrices.py ${t2space}/${i}/${seq}.txt ${tmpdir}/t2_sag_tse_sn.mat ${tmpdir}/${seq}_sn.mat ${tmpdir}/${seq}_combine.m"
-		$cmd
-		matlab -nodisplay -nosplash -nodesktop -r "addpath '${tmpdir}'; ${seq}_combine;" > /dev/null
-	done
+	log 2 "Copy SPM/matlab T2-to-std transformation file to the target directory" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	cmd="cp ${tmpdir}/t2_sag_tse_sn.mat ${stdspace}/${i}/t2_sag_tse.mat"
+	$cmd
 
 	log 2 "Create and run SPM Normalize Write / Warp step" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	_images=""
 	for seq in "${sequences[@]}"; do
-		cmd="${scripts}/make_spm_normalize_write.py ${tmpdir}/${seq}.nii ${tmpdir}/${seq}_sn.mat ${tmpdir}/${seq}_warp.m"
-		$cmd
-		matlab -nodisplay -nosplash -nodesktop -r "addpath '${tmpdir}'; ${seq}_warp;" > /dev/null
+		_images="${_images} ${tmpdir}/${seq}.nii"
 	done
+	cmd="${scripts}/make_spm_normalize_write.py ${tmpdir}/warp.m ${tmpdir}/t2_sag_tse_sn.mat ${_images}"
+	$cmd
+	matlab -nodisplay -nosplash -nodesktop -r "addpath '${tmpdir}'; warp;" > /dev/null
 
 	log 2 "Move created images to the target directory" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	for seq in "${sequences[@]}"; do

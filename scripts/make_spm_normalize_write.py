@@ -3,36 +3,36 @@
 ####
 # Creates a Matlab script to warp the different MRI sequences to std-space.
 # The method used is: SPM Normalize Write
-# arg1: the sequence image to register to std-space
-# arg2: the associated SPM transformation struct
-# arg3: the target matlab script file
+# arg1: the target matlab script to create
+# arg2: the SPM transformation struct containing the desired transformation
+# arg3+: the image to transform
 ####
 
 import sys
 
 def main():
-	imgfile = sys.argv[1]
+	target = sys.argv[1]
 	spmstruct = sys.argv[2]
-	target = sys.argv[3]
 
-	script = script_template.format(imgfile, spmstruct, spmstruct, imgfile)
+	combined_images = ' '.join(["'{},1'".format(img) for img in sys.argv[3:]])
+	script = script_template.format(combined_images, spmstruct, spmstruct, combined_images)
 
 	with open(target, 'w') as f:
 		f.write(script)
 
 script_template = """
-% Script to warp the image {} to std-space using {}.
+% Script to warp the images {} to std-space using {}.
 
 addpath '/home/maier/Applications/spm8'
 
 matlabbatch{{1}}.spm.spatial.normalise.write.subj(1).matname = {{'{}'}};
-matlabbatch{{1}}.spm.spatial.normalise.write.subj(1).resample = {{'{},1'}};
+matlabbatch{{1}}.spm.spatial.normalise.write.subj(1).resample = {{{}}};
 
 matlabbatch{{1}}.spm.spatial.normalise.write.roptions.preserve = 0;
 matlabbatch{{1}}.spm.spatial.normalise.write.roptions.bb = [-78 -112 -50
                                                           78 76 85];
 matlabbatch{{1}}.spm.spatial.normalise.write.roptions.vox = [1 1 1];
-matlabbatch{{1}}.spm.spatial.normalise.write.roptions.interp = 1;
+matlabbatch{{1}}.spm.spatial.normalise.write.roptions.interp = 7;
 matlabbatch{{1}}.spm.spatial.normalise.write.roptions.wrap = [0 0 0];
 matlabbatch{{1}}.spm.spatial.normalise.write.roptions.prefix = 'w';
 
