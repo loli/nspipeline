@@ -5,8 +5,10 @@
 #####
 
 ## Changelog
-# 2010-11-01 minor changes for bug-fixing
-# 2010-10-31 created
+# 2013-11-07 fixed problem with SPM using sform instead of qform information
+# 2013-11-06 added saveguard for when target file(s) already exist
+# 2013-11-01 minor changes for bug-fixing
+# 2013-10-31 created
 
 # include shared information
 source $(dirname $0)/include.sh
@@ -18,25 +20,32 @@ for i in "${images[@]}"; do
 	log 2 "Processing case ${i}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	mkdircond ${stdspace}/${i}
 
-	log 2 "Unpacking original images to .nii format" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	# continue if target file already exists (making assumption from T2 to all sequences)
+	if [ -f "${stdspace}/${i}/t2_sag_tse.${imgfiletype}" ]; then
+		continue
+	fi
+
+	log 2 "Unpacking original images to .nii format and correct sform" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	for seq in "${sequences[@]}"; do
-		cmd="medpy_convert.py ${originals}/${i}/${seq}.${imgfiletype} ${tmpdir}/${seq}.nii"
+		cmd="${scripts}/correct_sform.py ${originals}/${i}/${seq}.${imgfiletype} ${tmpdir}/${seq}.nii"
 		$cmd
 	done
 
 	log 2 "For T2 sequence, use isospaced image instead" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="medpy_convert.py ${t2space}/${i}/t2_sag_tse.${imgfiletype} ${tmpdir}/t2_sag_tse.nii -f"
+	cmd="${scripts}/correct_sform.py ${t2space}/${i}/t2_sag_tse.${imgfiletype} ${tmpdir}/t2_sag_tse.nii -f"
 	$cmd
 
 	log 2 "Create inverses of preliminary lesion mask in T2 space" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="${scripts}/invert.py ${t2segmentations}/${i}.${imgfiletype} ${tmpdir}/lesion_mask.nii"
+	cmd="${scripts}/invert.py ${t2segmentations}/${i}.${imgfiletype} ${tmpdir}/_lesion_mask.nii"
+	$cmd
+
+	log 2 "Correct sforms of lesion mask" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	cmd="${scripts}/correct_sform.py ${tmpdir}/_lesion_mask.nii ${tmpdir}/lesion_mask.nii"
 	$cmd
 
 	log 2 "Create and run SPM Normalize Estimate step" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	cmd="${scripts}/make_spm_normalize_estimate.py ${tmpdir}/t2_sag_tse.nii ${tmpdir}/lesion_mask.nii ${tmpdir}/estimate.m"
-	echo $cmd
 	$cmd
-	echo "matlab -nodisplay -nosplash -nodesktop -r \"addpath '${tmpdir}'; estimate;\" > ${tmpdir}/log"
 	matlab -nodisplay -nosplash -nodesktop -r "addpath '${tmpdir}'; estimate;" > ${tmpdir}/log
 
 	log 2 "Check whether registration seemed to have failed" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
