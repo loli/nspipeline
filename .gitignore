@@ -1,6 +1,12 @@
 # workflow files #
 ##################
 todo.txt
+*.csv
+
+# Local files to exclude #
+##########################
+01t2space/show.sh
+06stdspace/show.sh
 
 # Pickle Python classes and NumpPy arrays #
 ###########################################
