@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2013-11-11 added a step to remove final inf and nan value from the images
 # 2013-11-11 changed to no combine the two registration steps, but rather executing them one after another
 # 2013-11-07 fixed problem with SPM using sform instead of qform information
 # 2013-11-06 added saveguard for when target file(s) already exist
@@ -65,6 +66,12 @@ for i in "${images[@]}"; do
 	log 2 "Move created images to the target directory" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	for seq in "${sequences[@]}"; do
 		cmd="medpy_convert.py ${tmpdir}/w${seq}.nii ${stdspace}/${i}/${seq}.${imgfiletype}"
+		$cmd
+	done
+
+	log 2 "Clean created images" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	for seq in "${sequences[@]}"; do
+		cmd="${scripts}/clean.py ${stdspace}/${i}/${seq}.${imgfiletype}"
 		$cmd
 	done
 
