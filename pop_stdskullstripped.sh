@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2013-11-14 added a step to correct the brain masks metadata
 # 2013-11-11 created
 
 # include shared information
@@ -33,6 +34,9 @@ function align_brainmask ()
 	$cmd
 	# threshold brainmask
 	cmd="${scripts}/threshold.py ${tmpdir}/${i}_maskf.${imgfiletype} 0.8 ${stdbrainmasks}/${i}.${imgfiletype}"
+	$cmd
+	# correct nifit orientation metadata in-place
+	cmd="${scripts}/niftimodifymetadata.py ${stdbrainmasks}/${i}.${imgfiletype} sf=qf qfc=2 sfc=2"
 	$cmd
 }
 parallelize align_brainmask ${threadcount} images[@]

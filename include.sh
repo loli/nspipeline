@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2013-11-14 Added new directories.
 # 2013-11-11 Added new directories.
 # 2013-10-31 Added new directories.
 # 2013-10-22 Added new directories.
@@ -23,7 +24,8 @@ stdspace="06stdspace"
 stdskullstripped="07stdskullstripped/"
 stdbiasfieldcorrected="08stdbiasfieldcorrected/"
 stdintensitrangestandardization="09stdintensitrangestandardization/"
-stdlesionsegmentation="10stdlesionsegmentation/"
+stdfeatureimages="10stdfeatureimages/"
+stdlesionsegmentation="11stdlesionsegmentation/"
 
 
 segmentations="100gtsegmentations/"
