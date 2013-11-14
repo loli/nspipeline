@@ -7,7 +7,7 @@
 
 ## Changelog
 # 2013-11-05 adapted to new brain mask location
-# 2010-10-29 created
+# 2013-10-29 created
 
 # include shared information
 source $(dirname $0)/include.sh
@@ -21,7 +21,7 @@ function extract_features ()
 	# run code
 	mkdircond ${t2lesionsegmentation}/${i}
 	cmd="${scripts}/extract_features.py ${t2intensitrangestandardization}/${i}/ ${t2brainmasks}/${i}.${imgfiletype} ${t2lesionsegmentation}/${i}/"
-	#$cmd
+	$cmd
 }
 parallelize extract_features ${threadcount} images[@]
 
@@ -32,20 +32,20 @@ function sample_trainingset ()
 	i=$1
 	# run code
 	cmd="${scripts}/sample_trainingset.py ${t2lesionsegmentation}/ ${t2segmentations} ${t2brainmasks}/{}.${imgfiletype} ${i}"
-	#$cmd
+	$cmd
 }
 parallelize sample_trainingset ${threadcount} images[@]
 
 log 2 "Training random decision forests" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
 	cmd="${scripts}/train_rdf.py ${t2lesionsegmentation}/${i}/trainingset.features.npy ${t2lesionsegmentation}/${i}/forest.pkl"
-	#$cmd
+	$cmd
 done
 
 log 2 "Applying random decision forests to segment lesion" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
 	cmd="${scripts}/apply_rdf.py ${t2lesionsegmentation}/${i}/forest.pkl ${t2lesionsegmentation}/${i}/ ${t2brainmasks}/${i}.nii.gz ${t2lesionsegmentation}/${i}/segmentation.nii.gz"
-	#$cmd
+	$cmd
 done
 
 log 2 "Compute overall evaluation" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"

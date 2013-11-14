@@ -6,8 +6,8 @@
 #####
 
 ## Changelog
-# 2010-11-04 Improved the mechanism and seperated the brain mask location from the skull-stripped images.
-# 2010-10-16 created
+# 2013-11-04 Improved the mechanism and seperated the brain mask location from the skull-stripped images.
+# 2013-10-16 created
 
 # include shared information
 source $(dirname $0)/include.sh

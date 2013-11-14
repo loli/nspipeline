@@ -9,9 +9,10 @@
 #####
 
 ## Changelog
-# 2010-11-04 Added re-sampling of T2 image to isotropic spacing before registration and update loop design.
-# 2010-10-16 ADC images are now not registered directly, but rather transformed with the DW transformation matrix
-# 2010-10-15 created
+# 2013-11-13 Added step to correct the qform and sform codes
+# 2013-11-04 Added re-sampling of T2 image to isotropic spacing before registration and update loop design.
+# 2013-10-16 ADC images are now not registered directly, but rather transformed with the DW transformation matrix
+# 2013-10-15 created
 
 # include shared information
 source $(dirname $0)/include.sh
@@ -66,8 +67,6 @@ for i in "${images[@]}"; do
 done
 # remove temporary directory
 rmdircond ${tmpdir}
-log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-
 
 log 2 "Transforming ADC images" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 # prepare temporary directory
@@ -86,5 +85,14 @@ for i in "${images[@]}"; do
 done
 # remove temporary directory
 rmdircond ${tmpdir}
+
+log 2 "Correcting metadata" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+for i in "${images[@]}"; do
+	for s in "${sequences[@]}"; do
+		cmd="${scripts}/niftimodifymetadata.py ${t2space}/${i}/${s}.${imgfiletype} qf=qf sf=qf qfc=1 sfc=1"
+		$cmd
+	done
+done	
+
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 

@@ -5,8 +5,9 @@
 #####
 
 ## Changelog
-# 2010-11-05 adapted to new brain mask location
-# 2010-10-22 created
+# 2013-11-14 changed script to allow for intensity correction of an image, even if the model already exists
+# 2013-11-05 adapted to new brain mask location
+# 2013-10-22 created
 
 # include shared information
 source $(dirname $0)/include.sh
@@ -19,35 +20,36 @@ for s in "${sequences[@]}"; do
 
 	# if target model already exists, skip model creation for the whole sequence and remark upon it
 	if [ -f "${t2intensitrangestandardization}/intensity_model_${s}.pkl" ]; then
-		log 3 "The intensity model for the MIR sequence ${s} already exists. Skipping the model creation and image transformation for the whole sequence." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-		continue
+		log 3 "The intensity model for the MIR sequence ${s} already exists. Skipping the model creation for the whole sequence." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	else
+		# collect all the images for training
+		images_string=""
+		masks_string=""
+		for i in "${images[@]}"; do
+			# if target file already exists, skip model creation for the whole sequence and remark upon it
+			if [ -f "${t2intensitrangestandardization}/${i}/${s}.${imgfiletype}" ]; then
+				log 3 "One of the target files for the MIR sequence ${s} already exists. Skipping the model creation and image transformation for the whole sequence." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+				continue 2
+			fi
+			# add image to list of images to use for training (always use all images)
+			images_string="${images_string} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype}"
+			masks_string="${masks_string} ${t2brainmasks}/${i}.${imgfiletype}"
+		done
+
+		# train the model without transforming the images
+		cmd="medpy_intensity_range_standardization.py --masks ${masks_string} --save-model ${t2intensitrangestandardization}/intensity_model_${s}.pkl ${images_string}"
+		$cmd
 	fi
 
-	# collect all the images for training
-	images_string=""
-	masks_string=""
-	for i in "${images[@]}"; do
-		# if target file already exists, skip model creation for the whole sequence and remark upon it
-		if [ -f "${t2intensitrangestandardization}/${i}/${s}.${imgfiletype}" ]; then
-			log 3 "One of the target files for the MIR sequence ${s} already exists. Skipping the model creation and image transformation for the whole sequence." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-			continue 2
-		fi
-		# add image to list of images to use for training (always use all images)
-		images_string="${images_string} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype}"
-		masks_string="${masks_string} ${t2brainmasks}/${i}.${imgfiletype}"
-	done
-
-	# train the model without transforming the images
-	cmd="medpy_intensity_range_standardization.py --masks ${masks_string} --save-model ${t2intensitrangestandardization}/intensity_model_${s}.pkl ${images_string}"
-	$cmd
-
-	# transform and post-process the images, them move them to their target location
+	# transform and post-process the images, them move them to their target location if not already existant
 	for i in "${images[@]}"; do
 		mkdircond ${t2intensitrangestandardization}/${i}
-		cmd="medpy_intensity_range_standardization.py --load-model ${t2intensitrangestandardization}/intensity_model_${s}.pkl --masks ${t2brainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
-		$cmd
-		cmd="${scripts}/condenseoutliers.py ${tmpdir}/${s}.${imgfiletype} ${t2intensitrangestandardization}/${i}/${s}.${imgfiletype}"
-		$cmd
+		if [ ! -f "${t2intensitrangestandardization}/${i}/${s}.${imgfiletype}" ]; then
+			cmd="medpy_intensity_range_standardization.py --load-model ${t2intensitrangestandardization}/intensity_model_${s}.pkl --masks ${t2brainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${t2biasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
+			$cmd
+			cmd="${scripts}/condenseoutliers.py ${tmpdir}/${s}.${imgfiletype} ${t2intensitrangestandardization}/${i}/${s}.${imgfiletype}"
+			$cmd
+		fi
 	done
 
 	emptydircond ${tmpdir}

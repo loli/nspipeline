@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2013-11-14 removed sform correction step, as no longer necessary with the new metadata approach in the pipeline
 # 2013-11-11 added a step to remove final inf and nan value from the images
 # 2013-11-11 changed to no combine the two registration steps, but rather executing them one after another
 # 2013-11-07 fixed problem with SPM using sform instead of qform information
@@ -14,7 +15,6 @@
 
 # include shared information
 source $(dirname $0)/include.sh
-
 # main code
 tmpdir=`mktemp -d`
 
@@ -27,18 +27,14 @@ for i in "${images[@]}"; do
 		continue
 	fi
 
-	log 2 "Unpacking t2space images to .nii format and correct sform" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	log 2 "Unpacking t2space images to .nii format" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	for seq in "${sequences[@]}"; do
-		cmd="${scripts}/correct_sform.py ${t2space}/${i}/${seq}.${imgfiletype} ${tmpdir}/${seq}.nii"
+		cmd="medpy_convert.py ${t2space}/${i}/${seq}.${imgfiletype} ${tmpdir}/${seq}.nii"
 		$cmd
 	done
 
 	log 2 "Create inverses of preliminary lesion mask in T2 space" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="${scripts}/invert.py ${t2segmentations}/${i}.${imgfiletype} ${tmpdir}/_lesion_mask.nii"
-	$cmd
-
-	log 2 "Correct sforms of lesion mask" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="${scripts}/correct_sform.py ${tmpdir}/_lesion_mask.nii ${tmpdir}/lesion_mask.nii"
+	cmd="${scripts}/invert.py ${t2segmentations}/${i}.${imgfiletype} ${tmpdir}/lesion_mask.nii"
 	$cmd
 
 	log 2 "Create and run SPM Normalize Estimate step" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
