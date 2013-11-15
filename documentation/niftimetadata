@@ -1,0 +1,56 @@
+
+NifTi Orientation and Location
+##############################
+
+The NifTi standard describes three ways to define an images orientation and location, which can be found under
+http://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/qsform.html
+
+Most importantly are the values in "qform_code" and "sform_code", who determine which of the three approaches are available in the header of the current image and which one to pick. Generally theres is:
+- METHOD 1 (the "old" way, used only when qform_code = 0):
+- METHOD 2 (used when qform_code > 0, which should be the "normal" case):
+- METHOD 3 (used when sform_code > 0):
+It is sadly not defined what to do if "qform_code" > 0 and "sform_code" > 0 at the same time. The standard leaves it to the application to make its pick, which leads to inconsisten behaviour.
+
+Intended usage
+##############
+Mainly described under
+http://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/qsform.html
+
+The "qform" is intended for the real-world- / scanner-coordinate system, while the "sform" is intended for mapping to a custom space, such as the MNI template used in neuroscience. The value of their respective codes can give a hint on which space they transform to, but one can not rely on this:
+0 - unknown
+1 - scanner/real-world
+2 - aligned
+3 - talairach
+4 - mni
+Other positive values are also possible, but then with custom meaning attached and not portable. Negative values should never be used, although they can theoretically be set (field type is short, not ushort). Using them would elad to highly incosistent behaviour in the way program handle the images (as some check for "xform_code" > 0, while others use "xform_code" == 0).
+
+Handling of the orientation information by different programs
+#############################################################
+nibabel:
+- nibabel checks the qform_ as well as the sform_code and returns under header.get_affine() the most apropriate pick
+- nibabel preferes sform over qform, i.e. if both are present, the sform transformation is used
+- upon updating the pixel spacing (called zooms) or the offset (origin), the qform is updated correctly but not the sform, although both should be updated for consistency
+
+MedPy:
+- since based on nibabel, shares its behaviour
+- the get_pixel_spacing() as well as the get_origin() methods return the qform definitions, not the sform ones, independently on what nibabel consideres the best affine
+
+cmtk:
+- cmtk checks the qform_ as well as the sform_code and consideres the most apropriate pick
+- cmtk preferes qform over sform, i.e. if both are present, the qform transformation is used
+- upon saving a volume as a NifTi image, cmtk sets the qform to a diagonal matrix with a qform_code of 0 and places the volumes transform into the sform with a sform_code of 1
+
+elastix/ITK:
+- loading behaviour is unknown, but seems to favour qform
+- when reslicing the image, both qform and sform are updated
+- sometimes seems to set the qform_code to 2, which is somewhat consistent with the standard, as 2 - aligned
+
+SPM:
+- preferes sform over qform, yes, it even seems that it does not check the qform_ and sform_code, but always picks the qform transformation
+- when aligning to the std space, SPM saves the images with correct new sform and qform, as it seems, and sets both codes to a the value 2 (why? since ppoints to real-world)
+
+Agreed on behaviour
+###################
+In the pipeline, I enforce setting qform_code as well as sform_code to "1" resp. "2" and keep the sform as well as the qform aligned.
+
+
