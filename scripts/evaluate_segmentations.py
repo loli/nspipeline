@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Evaluate the segmentation created in T2 space.
+Evaluate the segmentation created.
 arg1: the segmentation result for each case, with a {} in place of the case number
 arg2: the ground truth segmentation, with a {} in place of the case number
 arg3: the cases mask file, with a {} in place of the case number
@@ -49,9 +49,9 @@ def main():
 
 	# compute and append metrics (Pool-processing)
 	pool = Pool(n_jobs)
-	prfs = pool.map(precision_recall_fscore, zip(s, t))
-	dcs = pool.map(dice_coefficient, zip(s, t))
-	hd_p2c = pool.map(hausdorff_p2c_distances, zip(s, t, hs, ht))
+	prfs = pool.map(precision_recall_fscore, zip(t, s))
+	dcs = pool.map(dice_coefficient, zip(t, s))
+	hd_p2c = pool.map(hausdorff_p2c_distances, zip(t, s, ht, hs))
 	hds = [hd for hd, _ in hd_p2c]
 	p2cs = [p2c for _, p2c in hd_p2c]
 

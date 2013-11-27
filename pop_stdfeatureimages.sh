@@ -10,8 +10,6 @@
 # include shared information
 source $(dirname $0)/include.sh
 
-images=('01')
-
 # constants
 active_sigmas=(0 1)
 reference_sigmas=(0 1)
@@ -47,29 +45,30 @@ done
 rmdircond ${tmpdir}
 
 
+# !Not required, as extracted directly without intermediate image!
 # for each spectrum
-for as in "${active_sigmas[@]}"; do
-	continue
-	for rs in "${reference_sigmas[@]}"; do
-		log 2 "Computing hemispheric difference maps for active and reference sigmas ${as} resp ${rs}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-		for s in "${sequences[@]}"; do
-			function compute_hd_map ()
-			{
-				# grab parameters
-				i=$1
-				# created required directories
-				mkdircond ${stdfeatureimages}/${i}
-				# continue if target file already exists
-				if [ -f "${stdfeatureimages}/${i}/${s}.as${as}_rs${rs}.${imgfiletype}" ]; then
-					return
-				fi
-				# extract
-				cmd="${scripts}/feature_hemispheric_difference.py ${stdintensitrangestandardization}/${i}/${s}.${imgfiletype} ${as} ${rs} 0 10 ${stdfeatureimages}/${i}/${s}.as${as}_rs${rs}.${imgfiletype}"
-				$cmd
-			}
-			parallelize compute_hd_map ${threadcount} images[@]
-		done
-	done
-done
+#for as in "${active_sigmas[@]}"; do
+#	continue
+#	for rs in "${reference_sigmas[@]}"; do
+#		log 2 "Computing hemispheric difference maps for active and reference sigmas ${as} resp ${rs}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+#		for s in "${sequences[@]}"; do
+#			function compute_hd_map ()
+#			{
+#				# grab parameters
+#				i=$1
+#				# created required directories
+#				mkdircond ${stdfeatureimages}/${i}
+#				# continue if target file already exists
+#				if [ -f "${stdfeatureimages}/${i}/${s}.as${as}_rs${rs}.${imgfiletype}" ]; then
+#					return
+#				fi
+#				# extract
+#				cmd="${scripts}/feature_hemispheric_difference.py ${stdintensitrangestandardization}/${i}/${s}.${imgfiletype} ${as} ${rs} 0 10 ${stdfeatureimages}/${i}/${s}.as${as}_rs${rs}.${imgfiletype}"
+#				$cmd
+#			}
+#			parallelize compute_hd_map ${threadcount} images[@]
+#		done
+#	done
+#done
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 

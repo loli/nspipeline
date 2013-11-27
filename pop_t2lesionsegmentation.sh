@@ -6,6 +6,7 @@
 #####
 
 ## Changelog
+# 2013-11-25 Updated to use new script to distinguish between t2 space and std spcae features
 # 2013-11-05 adapted to new brain mask location
 # 2013-10-29 created
 
@@ -20,7 +21,7 @@ function extract_features ()
 	i=$1
 	# run code
 	mkdircond ${t2lesionsegmentation}/${i}
-	cmd="${scripts}/extract_features.py ${t2intensitrangestandardization}/${i}/ ${t2brainmasks}/${i}.${imgfiletype} ${t2lesionsegmentation}/${i}/"
+	cmd="${scripts}/extract_features_stdspace.py ${t2intensitrangestandardization}/${i}/ ${t2brainmasks}/${i}.${imgfiletype} ${t2lesionsegmentation}/${i}/"
 	$cmd
 }
 parallelize extract_features ${threadcount} images[@]
