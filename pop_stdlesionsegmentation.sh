@@ -12,15 +12,15 @@
 source $(dirname $0)/include.sh
 
 # main code
-log 2 "Extracting the features" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+log 2 "Extracting features" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 function extract_features ()
 {
 	# grab parameters
 	i=$1
 	# run code
-	mkdircond ${t2lesionsegmentation}/${i}
+	mkdircond ${stdlesionsegmentation}/${i}
 	cmd="${scripts}/extract_features_stdspace.py ${stdintensitrangestandardization}/${i}/ ${stdbrainmasks}/${i}.${imgfiletype} ${stdlesionsegmentation}/${i}/"
-	$cmd
+	#$cmd
 }
 parallelize extract_features ${threadcount} images[@]
 
@@ -43,7 +43,7 @@ done
 
 log 2 "Applying random decision forests to segment lesion" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
-	cmd="${scripts}/apply_rdf.py ${stdlesionsegmentation}/${i}/forest.pkl ${stdlesionsegmentation}/${i}/ ${stdbrainmasks}/${i}.nii.gz ${stdlesionsegmentation}/${i}/segmentation.nii.gz"
+	cmd="${scripts}/apply_rdf.py ${stdlesionsegmentation}/${i}/forest.pkl ${stdlesionsegmentation}/${i}/ ${stdbrainmasks}/${i}.nii.gz ${stdlesionsegmentation}/${i}/segmentation.${imgfiletype}"
 	$cmd
 done
 

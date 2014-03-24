@@ -37,7 +37,7 @@ def main():
                             oob_score = False,
                             random_state=0,
                             n_jobs=n_jobs,
-                            compute_importances=False)
+                            compute_importances=True)
         forest.fit(training_feature_vector, training_class_vector)
 
 	# saving the decision forest

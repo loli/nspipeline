@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2013-11-25 removed part to extract hemispheric difference features, as these features are directly computed \wo intermediate image
 # 2013-11-14 created
 
 # include shared information
@@ -44,31 +45,5 @@ for i in "${images[@]}"; do
 done
 rmdircond ${tmpdir}
 
-
-# !Not required, as extracted directly without intermediate image!
-# for each spectrum
-#for as in "${active_sigmas[@]}"; do
-#	continue
-#	for rs in "${reference_sigmas[@]}"; do
-#		log 2 "Computing hemispheric difference maps for active and reference sigmas ${as} resp ${rs}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-#		for s in "${sequences[@]}"; do
-#			function compute_hd_map ()
-#			{
-#				# grab parameters
-#				i=$1
-#				# created required directories
-#				mkdircond ${stdfeatureimages}/${i}
-#				# continue if target file already exists
-#				if [ -f "${stdfeatureimages}/${i}/${s}.as${as}_rs${rs}.${imgfiletype}" ]; then
-#					return
-#				fi
-#				# extract
-#				cmd="${scripts}/feature_hemispheric_difference.py ${stdintensitrangestandardization}/${i}/${s}.${imgfiletype} ${as} ${rs} 0 10 ${stdfeatureimages}/${i}/${s}.as${as}_rs${rs}.${imgfiletype}"
-#				$cmd
-#			}
-#			parallelize compute_hd_map ${threadcount} images[@]
-#		done
-#	done
-#done
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 

@@ -13,7 +13,7 @@ import sys
 import pickle
 import numpy
 
-from scipy.ndimage.morphology import binary_fill_holes
+from scipy.ndimage.morphology import binary_fill_holes, binary_dilation
 from scipy.ndimage.measurements import label
 
 from medpy.io import load, save
@@ -49,6 +49,7 @@ def main():
     	o[m] = numpy.squeeze(classification_results).ravel()
 
 	# applying the post-processing morphology
+	o = binary_dilation(o, iterations=2)
 	o = keep_largest_connected_component(o)
 	o = binary_fill_holes(o)
 

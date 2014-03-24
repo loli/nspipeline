@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Sample a trani ng set for a case by drawing from all other images using sstratified random sampling.
+Sample a traning set for a case by drawing from all other images using sstratified random sampling.
 arg1: directory with case-folders containing feature files
 arg2: directory containing segmentations
 arg3: string pointing to the cases brain masks with a {} in place of the case number
