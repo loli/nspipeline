@@ -16,7 +16,7 @@
 
 # folders
 originals="00original/"
-t2space="01t2space/"
+sequencespace="01flairspace/"
 t2skullstripped="02t2skullstripped/"
 t2biasfieldcorrected="03t2biasfieldcorrected/"
 t2intensitrangestandardization="04t2intensitrangestandardization/"
@@ -49,7 +49,7 @@ imgfiletype="nii.gz"
 threadcount=6
 
 # logging
-loglevel=2 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
+loglevel=1 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
 logprefixes=('DEBUG' 'INFO' 'WARNING' 'ERROR')
 logprintlocation=false # true | false to print the location from where the log was triggered
 
@@ -167,14 +167,36 @@ function removedircond {
 }
 
 #####
-## Runs the passed command if no variable "dryrun" has been initialized with a non-empty value
+## Runs the passed command if no variable "dryrun" has been initialized with a non-empty value.
+## As a second parameter a redirect target of the command std output can optionaly be passed.
 #####
 function runcond {
 	cmd=$1
 	if [[ -z "$dryrun" ]]; then
-		$cmd
+		if [ $# -gt 1 ]; then
+			$cmd > $2
+		else
+			$cmd
+		fi
 	else
 		echo "DRYRUN: ${cmd}"
+	fi
+}
+
+######
+## Copy a file if target file does not exist already
+######
+function cpcond {
+	source=$1
+	target=$2
+
+	if [ ! -f ${source} ]; then
+		log 3 "Source file ${source} does not exists. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	elif [ -f ${target} ]; then
+		log 1 "Target file ${target} already exists, skipping." [$BASH_SOURCE:$FUNCNAME:$LINENO]
+	else
+		log 1 "Copying ${source} to ${target}." [$BASH_SOURCE:$FUNCNAME:$LINENO]
+		runcond "cp ${source} ${target}"
 	fi
 }
 
@@ -206,4 +228,14 @@ function lncond {
 	else
 		log 1 "Target file ${target} already exists, skipping." [$BASH_SOURCE:$FUNCNAME:$LINENO]
 	fi
+}
+
+#####
+## Checks whether an element exists in an array
+## Call like: isIn "element" "${array[@]}"
+#####
+isIn () {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
 }

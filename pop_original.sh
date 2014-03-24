@@ -33,7 +33,7 @@ declare -A c02indicesmapping=(	["30"]="02" ["31"]="08" ["32"]="11" ["33"]="13" [
 ###
 # Create an ADC map if required sequences are available
 ###
-function make_adc_map {
+function make_adc_map () {
 	srcdir=$1
 	trgfile=$2
 
@@ -51,7 +51,7 @@ function make_adc_map {
 ###
 # Link all the sequences of a case
 ###
-function link_case {
+function link_case () {
 
 	srcdir=$1
 	idx=$2
