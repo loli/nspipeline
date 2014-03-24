@@ -1,12 +1,12 @@
-Holds the original images, some as softlinks, other as real files.
+Holds the original images, some as softlinks, other as real files. One sub-folder per
+case, each with a different number of image files.
 
 The cases come from two different sources, the HEOPKS and JGABLENTZ image collections,
-but they all depict ischemic stroke lesions.
+but they all depict ischemic stroke lesions (although sometimes with small hemorrhages
+included).
 
-One sub-folder per case, each with four image files:
-	adc_tra.nii.gz
-	dw_tra_b1000_dmean.nii.gz
-	flair_tra.nii.gz
-	t2_sag_tse.nii.gz
+Image characteristics are listed in "IMAGECHARACTERISTICS_COMBINED.ods".
+Selection of cases and the mapping from database to case id are in "IMAGESELECTION.ods".
+Groupings according to different selection criteria can be found in "GROUPINGS.ods".
 
-All image with their original size and spacing and float64 datatype.
+All image with their original size, spacing and datatype.

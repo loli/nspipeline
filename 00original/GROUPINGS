@@ -1,0 +1,60 @@
+BASE SET:
+	3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21, 22, 23, 25, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 41, 42, 43, 44, 45
+	(has FLAIR & mostly ischemic & is ground truth)
+
+T2 SET:
+	(BASE SET & suitable T2 sequence)
+	=> Influence of T2 sequence
+
+DW SET:
+	(BASE SET & DW1000 mean sequence present)
+	=> Influence of DW sequence (especially in conjunction with DISTRACTION SET)
+
+FLIPPED SET:
+	(BASET SET \w half of the lesions flipped)
+	=> Influence of lesion hemisphere on results)
+
+CONNECTED SET:
+	(BASE SET & ground truth completely connected in 3D)
+	=> Allows to enable largest connected component preprocessing
+
+GOOD GROUND TRUTH SET:
+	(BASE SET & no negative ground truth remarks)
+	=> Influence of ground truth quality on results
+
+GOOD SCAN SET:
+	(BASE SET & no imaging artifacts)
+	=> Influence of image quality on results
+
+DISTRACTION SET:
+	(BASE SET & lesion similar hyperintensities (LSH) >= middle)
+	=> Influence of LSH occurences
+
+ISCHEMIC SET:
+	(BASE SET & has ischemic stroke only)
+	=> Influence of hemorrhage ocurrence on results
+
+HEMORRHAGIC SET:
+	(BASE SET & has hemorrhage)
+	=> Influence of hemorrhage ocurrence on results
+
+HEOPKS SET:
+	(BASE SET & HEOPKS database)
+	=> Compare single vs. two sets
+
+JGABLENTZ SET:
+	(BASE SET & JGABLENTZ database)
+	=> Compare single vs. two sets
+
+LESION LOAD SETS:
+	(BASE SET & a) lesion size > median size resp. b) lesion size <= median size)
+	=> Check inlfuence of lesion size dedicated detectors
+
+LESION AGE SETS:
+	(BASE SET & a) lesion age > median age resp b) lesion age <= median age)
+	=> Check quality of lesion age dedicated detectors
+
+NIHSS SETS:
+	(BASE SET & a) nihss score > median score resp. b) nihss score <= median score)
+	=> Check inlfuence of stroke serverity on results
+	

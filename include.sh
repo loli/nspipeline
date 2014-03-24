@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2014-03-24 Added the runcond function.
 # 2013-11-14 Added new directories.
 # 2013-11-11 Added new directories.
 # 2013-10-31 Added new directories.
@@ -38,8 +39,8 @@ scripts="scripts/"
 configs="configs/"
 
 # image arrays
-images=('01' '02' '03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '14' '15' '16' '17' '18' '19' '20' '21' '22')
-sequences=("flair_tra" "dw_tra_b1000_dmean" "adc_tra" "t2_sag_tse") # keep the order!
+images=('03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '15' '17' '18' '19' '20' '21' '22' '23' '25' '26' '28' '29' '30' '31' '32' '33' '34' '35' '36' '37' '39' '40' '41' '42' '43' '44' '45')
+sequences=("flair_tra") # sequences to use
 
 # other constants
 imgfiletype="nii.gz"
@@ -48,7 +49,7 @@ imgfiletype="nii.gz"
 threadcount=6
 
 # logging
-loglevel=1 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
+loglevel=2 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
 logprefixes=('DEBUG' 'INFO' 'WARNING' 'ERROR')
 logprintlocation=false # true | false to print the location from where the log was triggered
 
@@ -163,6 +164,18 @@ function removedircond {
 	directory=${1}
 	emptydircond ${directory}
 	rmdircond ${directory}
+}
+
+#####
+## Runs the passed command if no variable "dryrun" has been initialized with a non-empty value
+#####
+function runcond {
+	cmd=$1
+	if [[ -z "$dryrun" ]]; then
+		$cmd
+	else
+		echo "DRYRUN: ${cmd}"
+	fi
 }
 
 ######
