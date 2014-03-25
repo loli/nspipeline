@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2014-03-25 Adapted directory structure.
 # 2014-03-24 Added the runcond function.
 # 2013-11-14 Added new directories.
 # 2013-11-11 Added new directories.
@@ -17,10 +18,10 @@
 # folders
 originals="00original/"
 sequencespace="01flairspace/"
-t2skullstripped="02t2skullstripped/"
-t2biasfieldcorrected="03t2biasfieldcorrected/"
-t2intensitrangestandardization="04t2intensitrangestandardization/"
-t2lesionsegmentation="05t2lesionsegmentation/"
+sequenceskullstripped="02flairskullstripped/"
+sequencebiasfieldcorrected="02flairskullstripped/"
+sequenceintensitrangestandardization="04flairintensitrangestandardization/"
+sequencelesionsegmentation="05flairlesionsegmentation/"
 stdspace="06stdspace"
 stdskullstripped="07stdskullstripped/"
 stdbiasfieldcorrected="08stdbiasfieldcorrected/"
@@ -30,8 +31,8 @@ stdlesionsegmentation="11stdlesionsegmentation/"
 
 
 segmentations="100gtsegmentations/"
-t2segmentations="101t2segmentations/"
-t2brainmasks="102t2brainmasks/"
+sequencesegmentations="101flairsegmentations/"
+sequencebrainmasks="102flairbrainmasks/"
 stdsegmentations="103stdsegmentations/"
 stdbrainmasks="104stdbrainmasks/"
 
@@ -49,7 +50,7 @@ imgfiletype="nii.gz"
 threadcount=6
 
 # logging
-loglevel=1 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
+loglevel=2 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
 logprefixes=('DEBUG' 'INFO' 'WARNING' 'ERROR')
 logprintlocation=false # true | false to print the location from where the log was triggered
 
@@ -238,4 +239,26 @@ isIn () {
   local e
   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
   return 1
+}
+
+###
+# Join the elements of an array using a one-character delimiter
+# Call like: joinarr $delimiter ${arr[@]}
+###
+function joinarr () {
+	local IFS="${1}"
+	shift
+	echo "$*"
+}
+
+###
+# Returns the voxel spacing of supplied image as space separated string
+# To catch as array, use var=( $(voxelspacing "imagelocation") )
+###
+function voxelspacing () {
+	local image=$1
+	local vss=`medpy_info.py "${image}" | grep "spacing"`
+	local vse=${vss:15:-1}
+	local vs=(${vse//, / })
+	echo "${vs[@]}"
 }
