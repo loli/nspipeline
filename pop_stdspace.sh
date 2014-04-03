@@ -38,7 +38,7 @@ for i in "${images[@]}"; do
 	done
 
 	log 2 "Create inverses of preliminary lesion mask in basesequence space" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	runcond "${scripts}/invert.py ${sequencesegmentations}/${i}.${imgfiletype} ${tmpdir}/lesion_mask.nii"
+	runcond "${scripts}/invert.py ${sequencelesionsegmentation}/${i}/segmentation_post.${imgfiletype} ${tmpdir}/lesion_mask.nii"
 
 	log 2 "Create and run SPM Normalize Estimate step" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	runcond "${scripts}/make_spm_normalize_estimate.py ${tmpdir}/${basesequence}.nii ${tmpdir}/lesion_mask.nii ${tmpdir}/estimate.m"
