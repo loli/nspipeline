@@ -24,8 +24,11 @@ def main():
         # loading training features
         with open(training_set_features, 'r') as f:
             training_feature_vector = numpy.load(f)
+	    if 1 == training_feature_vector.ndim:
+		training_feature_vector = numpy.expand_dims(training_feature_vector, -1)
         with open(training_set_classes , 'r') as f:
             training_class_vector = numpy.load(f)
+	
 
         # prepare and train the decision forest
         forest = ExtraTreesClassifier(n_estimators=200,

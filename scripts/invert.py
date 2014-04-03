@@ -18,6 +18,7 @@ def main():
 
 	i, h = load(infile)
 	i = i.astype(numpy.bool)
+	h.set_sform(h.get_qform())
 	save(~i, outfile, h)
 
 if __name__ == "__main__":

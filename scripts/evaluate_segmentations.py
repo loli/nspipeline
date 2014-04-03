@@ -14,11 +14,9 @@ import time
 from multiprocessing.pool import Pool
 
 import numpy
-from scipy.ndimage.morphology import binary_erosion
-from scipy.spatial.distance import cdist
-from sklearn.metrics.metrics import precision_recall_fscore_support
 
 from medpy.io import load, header
+from medpy.metric import dc, hd, assd, precision, recall
 
 # constants
 n_jobs = 6
@@ -33,8 +31,9 @@ def main():
 
 	# evaluate each case and collect the scores
 	hds = []
-	p2cs = []
-	prfs = []
+	assds = []
+	precisions = []
+	recalls = []
 	dcs = []
 
 	# load images and apply mask to segmentation and ground truth (to remove ground truth fg outside of brain mask)
@@ -49,202 +48,34 @@ def main():
 
 	# compute and append metrics (Pool-processing)
 	pool = Pool(n_jobs)
-	prfs = pool.map(precision_recall_fscore, zip(t, s))
-	dcs = pool.map(dice_coefficient, zip(t, s))
-	hd_p2c = pool.map(hausdorff_p2c_distances, zip(t, s, ht, hs))
-	hds = [hd for hd, _ in hd_p2c]
-	p2cs = [p2c for _, p2c in hd_p2c]
+	dcs = pool.map(wdc, zip(t, s))
+	precisions = pool.map(wprecision, zip(s, t))
+	recalls = pool.map(wrecall, zip(s, t))
+	hds = pool.map(whd, zip(t, s, [header.get_pixel_spacing(h) for h in ht]))
+	assds = pool.map(wassd, zip(t, s, [header.get_pixel_spacing(h) for h in ht]))
 
 	# print results
 	print 'Metrics:'
-	print 'Case\tDC[0,1]\tHD(mm)\tP2C(mm)\tprec.\trecall\tfscore'
-    	for case, dc, hd, p2c, prf in zip(cases, dcs, hds, p2cs, prfs):
-        	print '{}\t{:>3,.3f}\t{:>4,.3f}\t{:>4,.3f}\t{:>3,.3f}\t{:>3,.3f}\t{:>3,.3f}'.format(case, dc, hd, p2c, *map(float, prf))
+	print 'Case\tDC[0,1]\tHD(mm)\tP2C(mm)\tprec.\trecall'
+    	for case, _dc, _hd, _assd, _pr, _rc in zip(cases, dcs, hds, assds, precisions, recalls):
+        	print '{}\t{:>3,.3f}\t{:>4,.3f}\t{:>4,.3f}\t{:>3,.3f}\t{:>3,.3f}'.format(case, _dc, _hd, _assd, _pr, _rc)
         
     	print 'DM  average\t{} +/- {}'.format(numpy.asarray(dcs).mean(), numpy.asarray(dcs).std())
     	print 'HD  average\t{} +/- {}'.format(numpy.asarray(hds).mean(), numpy.asarray(hds).std())
-    	print 'P2C average\t{} +/- {}'.format(numpy.asarray(p2cs).mean(), numpy.asarray(p2cs).std())
-    	print 'PRF average\t{} +/- {}'.format(numpy.asarray(prfs).mean(0), numpy.asarray(prfs).std(0))
+    	print 'ASSD average\t{} +/- {}'.format(numpy.asarray(assds).mean(), numpy.asarray(assds).std())
+    	print 'Prec. average\t{} +/- {}'.format(numpy.asarray(precisions).mean(), numpy.asarray(precisions).std())
+    	print 'Rec. average\t{} +/- {}'.format(numpy.asarray(recalls).mean(), numpy.asarray(recalls).std())
 
-def hausdorff_p2c_distances((i, j, hi, hj)):
-    """
-    Joint version of hausdorff and point-to-curve distances for faster computation.
-    
-    @return (hausdorff_distance, p2c_distance)
-    """
-    # pre-process inputs
-    if None == hj: hj = hi
-    
-    # compute pairwise (euclidean) distances and draw the minimum of each
-    di, dj = __pairwise_min_border_distance(i, j, hi, hj)
-    
-    # compute hausdorff and p2c distance
-    hd = float(max(di.max(), dj.max()))
-    p2c = 1/2. * (sum(di) / float(len(di)) + sum(dj) / float(len(dj)))
-    
-    # return distances
-    return (hd, p2c)
-    
-    
-def hausdorff_distance(i, j, hi, hj = None):
-    """
-    Computes the Hausdorff distance in mm between two binary objects.
-    @param i an n-dimensional image treated as boolean type
-    @param j an n-dimensional image treated as boolean type
-    @param hi header of image i
-    @param hj header of image j, if None, assuming that i and j share the pixel spacing
-    
-    @return the Hausdorff distance between the two sample contained in the input images    
-    """
-    # pre-process inputs
-    if None == hj: hj = hi
-    
-    # compute pairwise (euclidean) distances and draw the minimum of each
-    di, dj = __pairwise_min_border_distance(i, j, hi, hj)
-    
-    # compute and return hausdorff distance
-    return float(max(di.max(), dj.max()))
-    
-    
-def point2curve_distance(i, j, hi, hj = None):
-    """
-    Computes the point-to-curve (P2C) distance in mm between two binary objects.
-    
-    @param i an n-dimensional image treated as boolean type
-    @param j an n-dimensional image treated as boolean type
-    @param hi header of image i
-    @param hj header of image j, if None, assuming that i and j share the pixel spacing
-    
-    @return the dice coefficient between the two sample contained in the input images    
-    """
-    # compute pairwise (euclidean) distances and draw the minimum of each direction
-    di, dj = __pairwise_min_border_distance(i, j, hi, hj)
-    
-    # compute and return symmetric average distance
-    return 1/2. * (sum(di) / float(len(di)) + sum(dj) / float(len(dj)))
-    
-def dice_coefficient((i, j)):
-    """
-    Computes the dice coefficient between two samples expressed as binary images of
-    arbitrary dimensionality. Voxel spacing is irrelevant for the dice coefficient.
-    
-    @param i an n-dimensional image treated as boolean type
-    @param j an n-dimensional image treated as boolean type
-    
-    @return the dice coefficient between the two sample contained in the input images
-    """
-    # pre-process inputs
-    i = i.astype(numpy.bool)
-    j = j.astype(numpy.bool)
-    
-    # compute intersection size in voxels
-    intersection= numpy.count_nonzero(i & j)
-    
-    # compute the separate segmentation sizes
-    size_i = numpy.count_nonzero(i)
-    size_j = numpy.count_nonzero(j)
-    
-    # compute and return dice coefficient
-    return 2 * intersection / float(size_i + size_j)
-    
-def precision_recall_fscore((i, j)):
-    """
-    Computes precision, recall and f-score between two samples.
-    
-    @param i an n-dimensional image treated as boolean type
-    @param j an n-dimensional image treated as boolean type
-    
-    @return (precision, recall, fscore) as numpy array    
-    """
-    # pre-process inputs
-    i = i.astype(numpy.bool).flat
-    j = j.astype(numpy.bool).flat
-    
-    return numpy.asarray(precision_recall_fscore_support(i, j, average='weighted')).T[0:3]
-    
-def __pairwise_min_border_distance(i, j, hi, hj = None):
-    """
-    Takes two images containing a binary object each and computes the pairwise distances
-    between their border voxels.
-    
-    @param i an n-dimensional image treated as boolean type
-    @param j an n-dimensional image treated as boolean type
-    @param hi header of image i
-    @param hj header of image j, if None, assuming that i and j share the pixel spacing
-    
-    @return (min distances along i axes, min distance along j axes) of pairwise distances
-    """
-    # pre-process inputs
-    i = i.astype(numpy.bool)
-    j = j.astype(numpy.bool)
-    if None == hj: hj = hi
-    
-    # remove all but the one-pixel border of the samples in the images
-    i -= binary_erosion(i)
-    j -= binary_erosion(j)
-    
-    # extract location of border voxels
-    Xi = numpy.asarray(numpy.nonzero(i)).T
-    Xj = numpy.asarray(numpy.nonzero(j)).T
-    
-    # convert to real world space (i.e. mm)
-    Xi *= numpy.asarray(header.get_pixel_spacing(hi))
-    Xj *= numpy.asarray(header.get_pixel_spacing(hj))
-
-    # compute pairwise (euclidean) distances, extract minima along both axes and return
-    return __friendly_min_cdist(Xi, Xj)
-    
-def __friendly_min_cdist(XA, XB, max_memory_gb = 10.):
-    """
-    Calls scipy cdist and returns the min-values along each axis.
-    To avoid memory problems, takes care that the supplied amount in GB is never crossed.
-    
-    @return (min distances along XA axes, min distance along XB axes)
-    """
-    # determine required memory in GB for cdist calculation 
-    matrix_size_in_elements = XA.shape[0] * XB.shape[0]
-    matrix_size_in_bits = matrix_size_in_elements * 64
-    matrix_size_in_gb = matrix_size_in_bits / 1024. / 1024. / 1024.
-    
-    # determine number of required chunks and steplength
-    no_chunks = int(math.ceil(matrix_size_in_gb / max_memory_gb))
-    step_length = int(math.ceil(XB.shape[0] / float(no_chunks)))
-    
-    # prepare result variables
-    min_dist_XA = None
-    min_dist_XB = []
-    
-    # execute cdist step-wise and collect results
-    t_passed = []
-    mean = 0
-    for chunk in xrange(no_chunks):
-        t = time.time()
-        
-        slicer = slice(chunk * step_length, (chunk + 1) * step_length)
-        
-	if not silent:
-	        sys.stdout.write('\rFriendly pairwise cdist computation chunk {} / {} (~{}s remaining)'.format(chunk + 1, no_chunks, int(mean * (no_chunks - chunk))))
-        	#sys.stdout.write('{} GB chunk-size\n'.format(XA.shape[0] * XB[slicer].shape[0] * 64 / 1024. / 1024. / 1024.))
-        	sys.stdout.flush()
-        
-        d = cdist(XA, XB[slicer])
-        
-        if None == min_dist_XA:
-            min_dist_XA = d.min(1)
-        else:
-            min_dist_XA = numpy.minimum(min_dist_XA, d.min(1))
-            
-        min_dist_XB.extend(d.min(0))
-        
-        t_passed.append(time.time() - t)
-        
-        mean = sum(t_passed) / len(t_passed)
-        
-    if not silent: print
-    
-    # return min distances along XA and XB sets    
-    return min_dist_XA, numpy.asarray(min_dist_XB)
-    
+def wdc(x):
+	return dc(*x)
+def whd(x):
+	return hd(*x)
+def wprecision(x):
+	return precision(*x)
+def wrecall(x):
+	return recall(*x)
+def wassd(x):
+	return assd(*x)
 
 if __name__ == "__main__":
 	main()

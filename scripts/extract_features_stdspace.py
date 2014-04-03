@@ -61,6 +61,12 @@ features_to_extract = [
 	('adc_tra', local_histogram, [7, 11, 'image', (0, 100), 0], False)
 ]
 
+features_to_extract = [
+	('flair_tra', intensities, [], False),
+	('flair_tra', local_mean_gauss, [3], True),
+	('flair_tra', local_histogram, [11, 11, 'image', (0, 100), 0], False),
+	('flair_tra', guassian_gradient_magnitude, [5], True)]
+
 def main():
 	# loading the image mask
 	m = load(sys.argv[2])[0].astype(numpy.bool)

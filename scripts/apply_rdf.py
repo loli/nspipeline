@@ -36,6 +36,8 @@ def main():
 			with open(os.path.join(case_folder, _file), 'r') as f:
 				feature_vector.append(numpy.load(f))
 	feature_vector = join(*feature_vector)
+	if 1 == feature_vector.ndim:
+		feature_vector = numpy.expand_dims(feature_vector, -1)
 
 	# load and apply the decision forest
 	with open(forest_file, 'r') as f:
@@ -49,8 +51,8 @@ def main():
     	o[m] = numpy.squeeze(classification_results).ravel()
 
 	# applying the post-processing morphology
-	o = binary_dilation(o, iterations=2)
-	o = keep_largest_connected_component(o)
+	#o = binary_dilation(o, iterations=2)
+	#o = keep_largest_connected_component(o)
 	o = binary_fill_holes(o)
 
 	# savin the results

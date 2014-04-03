@@ -17,7 +17,7 @@ from medpy.io import load
 from medpy.features.utilities import append, join
 
 # main settings
-total_no_of_samples = 500000
+total_no_of_samples = 250000
 min_no_of_samples_per_class_and_case = 4
 
 # debug settings
