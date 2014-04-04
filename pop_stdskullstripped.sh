@@ -5,18 +5,21 @@
 #####
 
 ## Changelog
+# 2014-04-04 adapted to new style
 # 2013-11-14 added a step to correct the brain masks metadata
 # 2013-11-11 created
 
 # include shared information
 source $(dirname $0)/include.sh
 
+# constants
+basesequence="flair_tra" # the base-sequence to use as reference
+
 # main code
 tmpdir=`mktemp -d`
 
 log 2 "Reslicing brain mask" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-cmd="medpy_resample.py /home/maier/Applications/spm8/apriori/brainmask.nii ${tmpdir}/brainmask.${imgfiletype} 1,1,1"
-$cmd
+runcond "medpy_resample.py /home/maier/Applications/spm8/apriori/brainmask.nii ${tmpdir}/brainmask.${imgfiletype} 1,1,1"
 
 log 2 "Aligning brain mask and threshold" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 function align_brainmask ()
@@ -30,14 +33,11 @@ function align_brainmask ()
 		return
 	fi
 	# align brain mask
-	cmd="${scripts}/align.py ${tmpdir}/brainmask.${imgfiletype} ${stdspace}/${i}/t2_sag_tse.${imgfiletype} ${tmpdir}/${i}_maskf.${imgfiletype}"
-	$cmd
+	runcond "${scripts}/align.py ${tmpdir}/brainmask.${imgfiletype} ${stdspace}/${i}/${basesequence}.${imgfiletype} ${tmpdir}/${i}_maskf.${imgfiletype}"
 	# threshold brainmask
-	cmd="${scripts}/threshold.py ${tmpdir}/${i}_maskf.${imgfiletype} 0.8 ${stdbrainmasks}/${i}.${imgfiletype}"
-	$cmd
+	runcond "${scripts}/threshold.py ${tmpdir}/${i}_maskf.${imgfiletype} 0.8 ${stdbrainmasks}/${i}.${imgfiletype}"
 	# correct nifit orientation metadata in-place
-	cmd="${scripts}/niftimodifymetadata.py ${stdbrainmasks}/${i}.${imgfiletype} sf=qf qfc=2 sfc=2"
-	$cmd
+	runcond "${scripts}/niftimodifymetadata.py ${stdbrainmasks}/${i}.${imgfiletype} sf=qf qfc=2 sfc=2"
 }
 parallelize align_brainmask ${threadcount} images[@]
 emptydircond ${tmpdir}
@@ -54,8 +54,7 @@ function apply_brainmask ()
 		if [ -f "${stdskullstripped}/${i}/${s}.${imgfiletype}" ]; then
 			continue
 		fi
-		cmd="${scripts}/apply_binary_mask.py ${stdspace}/${i}/${s}.${imgfiletype} ${stdbrainmasks}/${i}.${imgfiletype} ${stdskullstripped}/${i}/${s}.${imgfiletype}"
-		$cmd > /dev/null
+		runcond "${scripts}/apply_binary_mask.py ${stdspace}/${i}/${s}.${imgfiletype} ${stdbrainmasks}/${i}.${imgfiletype} ${stdskullstripped}/${i}/${s}.${imgfiletype}"
 	done
 }
 parallelize apply_brainmask ${threadcount} images[@]

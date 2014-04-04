@@ -36,6 +36,7 @@ def main():
                             max_features = None,
                             min_samples_split = 2,
                             min_samples_leaf = 1,
+			    max_depth = None,
                             bootstrap = True,
                             oob_score = False,
                             random_state=0,

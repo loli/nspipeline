@@ -45,7 +45,7 @@ for s in "${sequences[@]}"; do
 	for i in "${images[@]}"; do
 		mkdircond ${sequenceintensitrangestandardization}/${i}
 		if [ ! -f "${sequenceintensitrangestandardization}/${i}/${s}.${imgfiletype}" ]; then
-			runcond "medpy_intensity_range_standardization.py --load-model ${sequenceintensitrangestandardization}/intensity_model_${s}.pkl --masks ${sequencebrainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${sequencebiasfieldcorrected}/${i}/${s}.${imgfiletype}"
+			runcond "medpy_intensity_range_standardization.py --load-model ${sequenceintensitrangestandardization}/intensity_model_${s}.pkl --masks ${sequencebrainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${sequencebiasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
 			runcond "${scripts}/condenseoutliers.py ${tmpdir}/${s}.${imgfiletype} ${sequenceintensitrangestandardization}/${i}/${s}.${imgfiletype}"
 		fi
 	done
