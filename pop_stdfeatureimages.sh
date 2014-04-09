@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #####
-# Segments the matters from the T2 brian images and creates hemispheric difference version of different smoothing parameters of the images.
+# Segments the matters from the T2 brain images and creates hemispheric difference version of different smoothing parameters of the images.
 #####
 
 ## Changelog

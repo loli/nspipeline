@@ -17,55 +17,33 @@ from medpy.features.intensity import indices as indices_feature
 
 trg_dtype = numpy.float32
 features_to_extract = [
+	('flair_tra', intensities, [], False),
 	('flair_tra', local_mean_gauss, [3], True),
 	('flair_tra', local_mean_gauss, [5], True),
-	('t2_sag_tse', local_mean_gauss, [5], True),
-	('flair_tra', guassian_gradient_magnitude, [5], True),
-	('adc_tra', intensities, [], False),
-	('flair_tra', median, [7], True),
+	('flair_tra', local_mean_gauss, [7], True),
+	#('flair_tra', guassian_gradient_magnitude, [5], True),
+	#('flair_tra', median, [7], True),
+	('flair_tra', local_histogram, [11, 'image', (0, 100), 5, None, None, 'ignore', 0], False), #11 bins, 5*2=10mm region
+	('flair_tra', local_histogram, [11, 'image', (0, 100), 10, None, None, 'ignore', 0], False), #11 bins, 10*2=20mm region
+	('flair_tra', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False), #11 bins, 15*2=30mm region
+	('flair_tra', centerdistance_xdminus1, [0], True),
+	('flair_tra', centerdistance_xdminus1, [1], True),
+	('flair_tra', centerdistance_xdminus1, [2], True),
 	('flair_tra', hemispheric_difference, [6, 9, 0], True),
 	('flair_tra', hemispheric_difference, [6, 15, 0], True),
 	('flair_tra', hemispheric_difference, [9, 15, 0], True),
 	('flair_tra', hemispheric_difference, [6, 12, 0], True),
-	('t2_sag_tse', hemispheric_difference, [15, 15, 0], True),
 	('flair_tra', hemispheric_difference, [9, 12, 0], True),
 	('flair_tra', hemispheric_difference, [12, 15, 0], True),
-	('t2_sag_tse', hemispheric_difference, [12, 12, 0], True),
-	('t2_sag_tse', hemispheric_difference, [12, 15, 0], True),
 	('flair_tra', hemispheric_difference, [3, 15, 0], True),
-	('t2_sag_tse', hemispheric_difference, [9, 12, 0], True),
-	('t2_sag_tse', hemispheric_difference, [9, 9, 0], True),
 	('flair_tra', hemispheric_difference, [3, 12, 0], True),
 	('flair_tra', hemispheric_difference, [6, 6, 0], True),
 	('flair_tra', hemispheric_difference, [9, 9, 0], True),
 	('flair_tra', hemispheric_difference, [3, 9, 0], True),
-	('t2_sag_tse', hemispheric_difference, [9, 15, 0], True),
 	('flair_tra', hemispheric_difference, [3, 6, 0], True),
-	('adc_tra', hemispheric_difference, [12, 15, 0], True),
 	('flair_tra', hemispheric_difference, [12, 12, 0], True),
-	('adc_tra', hemispheric_difference, [15, 15, 0], True),
-	('t2_sag_tse', hemispheric_difference, [6, 9, 0], True),
-	('t2_sag_tse', hemispheric_difference, [6, 6, 0], True),
-	('t2_sag_tse', hemispheric_difference, [15, 12, 0], True),
-	('t2_sag_tse', hemispheric_difference, [6, 12, 0], True),
-	('flair_tra', hemispheric_difference, [15, 15, 0], True),
-	('t2_sag_tse', hemispheric_difference, [6, 15, 0], True),
-	('adc_tra', hemispheric_difference, [12, 12, 0], True),
-	('dw_tra_b1000_dmean', hemispheric_difference, [15, 15, 0], True),
-	('flair_tra', local_histogram, [11, 11, 'image', (0, 100), 0], False),
-	('flair_tra', local_histogram, [11, 19, 'image', (0, 100), 0], False),
-	('flair_tra', local_histogram, [11, 29, 'image', (0, 100), 0], False),
-	('dw_tra_b1000_dmean', local_histogram, [11, 11, 'image', (0, 100), 0], False),
-	('dw_tra_b1000_dmean', local_histogram, [11, 19, 'image', (0, 100), 0], False),
-	('dw_tra_b1000_dmean', local_histogram, [11, 29, 'image', (0, 100), 0], False),
-	('adc_tra', local_histogram, [7, 11, 'image', (0, 100), 0], False)
+	('flair_tra', hemispheric_difference, [15, 15, 0], True)
 ]
-
-features_to_extract = [
-	('flair_tra', intensities, [], False),
-	('flair_tra', local_mean_gauss, [3], True),
-	('flair_tra', local_histogram, [11, 11, 'image', (0, 100), 0], False),
-	('flair_tra', guassian_gradient_magnitude, [5], True)]
 
 def main():
 	# loading the image mask

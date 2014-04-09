@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #####
-# Tranform all segmentation binary images to T2 space.
+# Tranform all segmentation binary images to basesequence space.
 #####
 
 ## Changelog
@@ -9,6 +9,9 @@
 
 # include shared information
 source $(dirname $0)/include.sh
+
+# constants
+basesequence="flair_tra" # the base-sequence to use
 
 # main code
 tmpdir=`mktemp -d`
@@ -21,22 +24,19 @@ for i in "${images[@]}"; do
 	fi
 
 	#log 2 "Unpacking original mask image to .nii format" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="medpy_convert.py ${t2segmentations}/${i}.${imgfiletype} ${tmpdir}/${i}.nii"
-	$cmd
+	runcond "medpy_convert.py ${sequencesegmentations}/${i}.${imgfiletype} ${tmpdir}/${i}.nii"
 
 	#log 2 "Create and run SPM Normalize Write / Warp step" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="${scripts}/make_spm_normalize_write_mask.py ${tmpdir}/warp.m ${stdspace}/${i}/t2_sag_tse.mat ${tmpdir}/${i}.nii"
-	$cmd
-	matlab -nodisplay -nosplash -nodesktop -r "addpath '${tmpdir}'; warp;" > ${tmpdir}/log #/dev/null
+	runcond "${scripts}/make_spm_normalize_write_mask.py ${tmpdir}/warp.m ${stdspace}/${i}/${basesequence}.mat ${tmpdir}/${i}.nii"
+	/usr/local/software/matlabR2014a/bin/matlab -nodisplay -nosplash -nodesktop -r "addpath '${tmpdir}'; warp;" > ${tmpdir}/log #/dev/null
 
 	#log 2 "Move created mask to the target directory" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="medpy_convert.py ${tmpdir}/w${i}.nii ${stdsegmentations}/${i}.${imgfiletype}"
-	$cmd
+	runcond "medpy_convert.py ${tmpdir}/w${i}.nii ${stdsegmentations}/${i}.${imgfiletype}"
 
 	#log 2 "Clean created mask" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	cmd="${scripts}/clean.py ${stdsegmentations}/${i}.${imgfiletype}"
-	$cmd
-
+	runcond "${scripts}/clean.py ${stdsegmentations}/${i}.${imgfiletype}"
+	echo $tmpdir
+	exit 0
 	emptydircond ${tmpdir}
 done
 rmdircond ${tmpdir}

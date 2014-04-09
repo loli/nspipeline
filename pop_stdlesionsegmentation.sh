@@ -6,6 +6,7 @@
 #####
 
 ## Changelog
+# 2014-04-04 adapted to new syntax
 # 2013-11-25 created
 
 # include shared information
@@ -19,10 +20,10 @@ function extract_features ()
 	i=$1
 	# run code
 	mkdircond ${stdlesionsegmentation}/${i}
-	cmd="${scripts}/extract_features_stdspace.py ${stdintensitrangestandardization}/${i}/ ${stdbrainmasks}/${i}.${imgfiletype} ${stdlesionsegmentation}/${i}/"
-	#$cmd
+	runcond "${scripts}/extract_features_stdspace.py ${stdintensitrangestandardization}/${i}/ ${stdbrainmasks}/${i}.${imgfiletype} ${stdlesionsegmentation}/${i}/"
 }
 parallelize extract_features ${threadcount} images[@]
+exit 0
 
 log 2 "Drawing a training set for each leave-one-out case using stratified random sampling" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 function sample_trainingset ()
@@ -30,26 +31,22 @@ function sample_trainingset ()
 	# grab parameters
 	i=$1
 	# run code
-	cmd="${scripts}/sample_trainingset.py ${stdlesionsegmentation}/ ${stdsegmentations} ${stdbrainmasks}/{}.${imgfiletype} ${i}"
-	$cmd
+	runcond "${scripts}/sample_trainingset.py ${stdlesionsegmentation}/ ${stdsegmentations} ${stdbrainmasks}/{}.${imgfiletype} ${i}"
 }
 parallelize sample_trainingset ${threadcount} images[@]
 
 log 2 "Training random decision forests" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
-	cmd="${scripts}/train_rdf.py ${stdlesionsegmentation}/${i}/trainingset.features.npy ${stdlesionsegmentation}/${i}/forest.pkl"
-	$cmd
+	runcond "${scripts}/train_rdf.py ${stdlesionsegmentation}/${i}/trainingset.features.npy ${stdlesionsegmentation}/${i}/forest.pkl"
 done
 
 log 2 "Applying random decision forests to segment lesion" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
-	cmd="${scripts}/apply_rdf.py ${stdlesionsegmentation}/${i}/forest.pkl ${stdlesionsegmentation}/${i}/ ${stdbrainmasks}/${i}.nii.gz ${stdlesionsegmentation}/${i}/segmentation.${imgfiletype}"
-	$cmd
+	runcond "${scripts}/apply_rdf.py ${stdlesionsegmentation}/${i}/forest.pkl ${stdlesionsegmentation}/${i}/ ${stdbrainmasks}/${i}.nii.gz ${stdlesionsegmentation}/${i}/segmentation.${imgfiletype}"
 done
 
 log 2 "Compute overall evaluation" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-cmd="${scripts}/evaluate_segmentations.py ${stdlesionsegmentation}/{}/segmentation.${imgfiletype} ${stdsegmentations}/{}.${imgfiletype} ${stdbrainmasks}/{}.${imgfiletype} ${images[@]}"
-$cmd
+runcond "${scripts}/evaluate_segmentations.py ${stdlesionsegmentation}/{}/segmentation.${imgfiletype} ${stdsegmentations}/{}.${imgfiletype} ${stdbrainmasks}/{}.${imgfiletype} ${images[@]}"
 
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 

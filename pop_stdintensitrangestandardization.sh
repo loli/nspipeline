@@ -36,18 +36,15 @@ for s in "${sequences[@]}"; do
 		done
 
 		# train the model without transforming the images
-		cmd="medpy_intensity_range_standardization.py --masks ${masks_string} --save-model ${stdintensitrangestandardization}/intensity_model_${s}.pkl ${images_string}"
-		$cmd
+		runcond "medpy_intensity_range_standardization.py --masks ${masks_string} --save-model ${stdintensitrangestandardization}/intensity_model_${s}.pkl ${images_string}"
 	fi
 
 	# transform and post-process the images, them move them to their target location
 	for i in "${images[@]}"; do
 		mkdircond ${stdintensitrangestandardization}/${i}
 		if [ ! -f "${stdintensitrangestandardization}/${i}/${s}.${imgfiletype}" ]; then
-			cmd="medpy_intensity_range_standardization.py --load-model ${stdintensitrangestandardization}/intensity_model_${s}.pkl --masks ${stdbrainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${stdbiasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
-			$cmd
-			cmd="${scripts}/condenseoutliers.py ${tmpdir}/${s}.${imgfiletype} ${stdintensitrangestandardization}/${i}/${s}.${imgfiletype}"
-			$cmd
+			runcond "medpy_intensity_range_standardization.py --load-model ${stdintensitrangestandardization}/intensity_model_${s}.pkl --masks ${stdbrainmasks}/${i}.${imgfiletype} --save-images ${tmpdir} ${stdbiasfieldcorrected}/${i}/${s}.${imgfiletype} -f"
+			runcond "${scripts}/condenseoutliers.py ${tmpdir}/${s}.${imgfiletype} ${stdintensitrangestandardization}/${i}/${s}.${imgfiletype}"
 		fi
 	done
 
