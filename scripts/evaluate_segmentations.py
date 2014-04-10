@@ -69,13 +69,21 @@ def main():
 def wdc(x):
 	return dc(*x)
 def whd(x):
-	return hd(*x)
+	try:
+		val = hd(*x)
+	except RuntimeError:
+		val = numpy.inf
+	return val
 def wprecision(x):
 	return precision(*x)
 def wrecall(x):
 	return recall(*x)
 def wassd(x):
-	return assd(*x)
+	try:
+		val = assd(*x)
+	except RuntimeError:
+		val = numpy.inf
+	return val
 
 if __name__ == "__main__":
 	main()
