@@ -3,6 +3,7 @@
 """
 Remove small binary objects from a binary mask.
 Note: Takes voxel-spacing into account.
+Note: Does not remove small objects if hte binary mask would be empty afterwards.
 <program>.py <in-binary-image> <out-binary-image> <threshold-size-in-mm>
 """
 
@@ -18,9 +19,12 @@ def main():
 	# adapt threshold by voxel spacing
 	thr /= numpy.prod(header.get_pixel_spacing(h))
 	# threshold binary objects
-	i = size_threshold(i, thr, 'lt')
+	j = size_threshold(i, thr, 'lt')
+	# reset if last object has been removed
+	if 0 == numpy.count_nonzero(j):
+		j = i
 
-	save(i, sys.argv[2], h, True)
+	save(j, sys.argv[2], h, True)
 
 if __name__ == "__main__":
 	main()
