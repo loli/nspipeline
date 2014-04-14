@@ -24,6 +24,7 @@ function compute_brainmask ()
 {
 	# grab parameters
 	i=$1
+
 	# created required directories
 	mkdircond ${sequenceskullstripped}/${i}
 	# continue if target file already exists
