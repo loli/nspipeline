@@ -56,8 +56,9 @@ if [ ${basesequence} == "flair_tra" ]; then
 	# if equal, simply link masks, if not, resample masks
 	if $equal; then
 		log 2 "Detected flair_tra sequence to not have been resampled. Performing linking." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+		cwd=$(pwd)
 		for i in "${images[@]}"; do
-			lncond "${segmentations}/${i}.${imgfiletype}" "${sequencesegmentations}/${i}.${imgfiletype}"
+			lncond "${cwd}/${segmentations}/${i}.${imgfiletype}" "${sequencesegmentations}/${i}.${imgfiletype}"
 		done
 	else
 		log 2 "Detected flair_tra sequence to have been resampled. Performing binary resampling." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
