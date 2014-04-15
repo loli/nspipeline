@@ -54,17 +54,22 @@ def main():
 	hds = pool.map(whd, zip(t, s, [header.get_pixel_spacing(h) for h in ht]))
 	assds = pool.map(wassd, zip(t, s, [header.get_pixel_spacing(h) for h in ht]))
 
-	# print results
+	# print case-wise results
 	print 'Metrics:'
 	print 'Case\tDC[0,1]\tHD(mm)\tP2C(mm)\tprec.\trecall'
     	for case, _dc, _hd, _assd, _pr, _rc in zip(cases, dcs, hds, assds, precisions, recalls):
         	print '{}\t{:>3,.3f}\t{:>4,.3f}\t{:>4,.3f}\t{:>3,.3f}\t{:>3,.3f}'.format(case, _dc, _hd, _assd, _pr, _rc)
         
-    	print 'DM  average\t{} +/- {}'.format(numpy.asarray(dcs).mean(), numpy.asarray(dcs).std())
-    	print 'HD  average\t{} +/- {}'.format(numpy.asarray(hds).mean(), numpy.asarray(hds).std())
-    	print 'ASSD average\t{} +/- {}'.format(numpy.asarray(assds).mean(), numpy.asarray(assds).std())
-    	print 'Prec. average\t{} +/- {}'.format(numpy.asarray(precisions).mean(), numpy.asarray(precisions).std())
-    	print 'Rec. average\t{} +/- {}'.format(numpy.asarray(recalls).mean(), numpy.asarray(recalls).std())
+	# check for nan/inf values of failed cases and signal warning
+	mask = numpy.isfinite(hds)
+	if not numpy.all(mask):
+		print 'WARNING: Average values only computed on {} of {} cases!'.format(numpy.count_nonzero(mask), mask.size)
+		
+    	print 'DM  average\t{} +/- {}'.format(numpy.asarray(dcs)[mask].mean(), numpy.asarray(dcs)[mask].std())
+    	print 'HD  average\t{} +/- {}'.format(numpy.asarray(hds)[mask].mean(), numpy.asarray(hds)[mask].std())
+    	print 'ASSD average\t{} +/- {}'.format(numpy.asarray(assds)[mask].mean(), numpy.asarray(assds)[mask].std())
+    	print 'Prec. average\t{} +/- {}'.format(numpy.asarray(precisions)[mask].mean(), numpy.asarray(precisions)[mask].std())
+    	print 'Rec. average\t{} +/- {}'.format(numpy.asarray(recalls)[mask].mean(), numpy.asarray(recalls)[mask].std())
 
 def wdc(x):
 	return dc(*x)
