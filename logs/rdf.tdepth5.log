@@ -1,0 +1,7 @@
+INFO: Extracting the features
+INFO: Drawing a training set for each leave-one-out case using stratified random sampling
+INFO: Training random decision forests
+INFO: Applying random decision forests to segment lesion
+INFO: Morphological post-processing
+INFO: Compute overall evaluation
+INFO: Done.

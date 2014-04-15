@@ -1,0 +1,3 @@
+INFO: Extracting the features
+INFO: Drawing a training set for each leave-one-out case using stratified random sampling
+INFO: Training random decision forests
