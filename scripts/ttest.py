@@ -21,7 +21,7 @@ def parse_evaluation_file(fn):
 	with open(fn, 'r') as f:
 		for line in f.readlines():
 			line = line.strip()
-			if 'DM  average' == line[:11]:
+			if 'Average' in line or 'average' in line:
 				parse = False
 			if parse:
 				vals = line.split('\t')
@@ -47,6 +47,24 @@ if not h1 == h2:
 	print 'Evaluation file {} contains {}.'.format(sys.argv[1], h1)
 	print 'Evaluation file {} contains {}.'.format(sys.argv[2], h2)
 	sys.exit(-1)
+
+# remove failed cases
+failedno = 0
+failedkey = []
+for key, scores in list(r1.iteritems()):
+	if not numpy.all(numpy.isfinite(scores)):
+		failedno += 1
+		failedkey.append(key)
+		del r1[key]
+		del r2[key]
+for key, scores in list(r2.iteritems()):
+	if not numpy.all(numpy.isfinite(scores)):
+		failedno += 1
+		failedkey.append(key)
+		del r1[key]
+		del r2[key]
+if not 0 == failedno:
+	print 'WARNING: Statistics only computed for {} of {} cases, as some segmentations failed in at least one of the compared evaluation results!'.format(len(r1) - failedno, len(r1))
 
 print 'Statistical significance between results obtained for run r1 ({}) against run r2 ({}) on {} cases:'.format(sys.argv[1], sys.argv[2], len(r1))
 print 'Applied test: Paired t-test for two related samples of scores.'
