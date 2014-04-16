@@ -10,9 +10,6 @@
 # include shared information
 source $(dirname $0)/include.sh
 
-# constants
-basesequence="flair_tra" # the base-sequence to use
-
 # main code
 tmpdir=`mktemp -d`
 for i in "${images[@]}"; do
@@ -22,6 +19,9 @@ for i in "${images[@]}"; do
 	if [ -f "${stdsegmentations}/${i}.${imgfiletype}" ]; then
 		continue
 	fi
+
+	# correct sfrom / header of sequencesegmentations in place
+	runcond "${scripts}/pass_header.py ${sequencesegmentations}/${i}.${imgfiletype} ${sequencespace}/${i}/${basesequence}.${imgfiletype}"
 
 	#log 2 "Unpacking original mask image to .nii format" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	runcond "medpy_convert.py ${sequencesegmentations}/${i}.${imgfiletype} ${tmpdir}/${i}.nii"
@@ -35,8 +35,7 @@ for i in "${images[@]}"; do
 
 	#log 2 "Clean created mask" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	runcond "${scripts}/clean.py ${stdsegmentations}/${i}.${imgfiletype}"
-	echo $tmpdir
-	exit 0
+
 	emptydircond ${tmpdir}
 done
 rmdircond ${tmpdir}
