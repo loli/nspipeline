@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2014-05-05 Added the lnrealize() function.
 # 2014-03-25 Adapted directory structure.
 # 2014-03-24 Added the runcond function.
 # 2013-11-14 Added new directories.
@@ -228,6 +229,17 @@ function lncond {
 		fi
 	else
 		log 1 "Target file ${target} already exists, skipping." [$BASH_SOURCE:$FUNCNAME:$LINENO]
+	fi
+}
+
+###
+# Takes a symbolic link and makes it "real" i.e. replaces the link with a copy of the
+# actual target file.
+###
+lnrealize() {
+	if [ -L ${1} ]
+	then
+		runcond "cp --remove-destination `readlink ${1}` ${1}"
 	fi
 }
 

@@ -6,12 +6,16 @@
 
 ## Changelog
 
+# 2014-05-05 Changed to also include the flipping along the mid-saggital plane for every second case.
 # 2014-03-25 Changed to copy images and correcting (possibly faulty) voxel spacing
 # 2014-03-25 Adapted to work with new case to database case mapping.
 # 2013-10-21 created
 
 # include shared information
 source $(dirname $0)/include.sh
+
+# Constants
+basesequenceflipdim="0"
 
 # Image collection HEOPKS details
 c01dir="/imagedata/HEOPKS/segmentation/"
@@ -40,4 +44,14 @@ for i in "${images[@]}"; do
 		log 3 "No candidate for case id ${i} found in any of the collections. Please check your 'images' array. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	fi
 done
+
+log 2 "Flipping ground truth of every second case in-place along the mid-saggital plane" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+for (( i = 1 ; i < ${#images[@]} ; i+=2 )) do
+	f="${segmentations}/${images[$i]}.${imgfiletype}"
+	if [ -e ${f} ]; then
+		lnrealize "${f}"
+		runcond "${scripts}/flip.py ${f} ${basesequenceflipdim}"
+	fi
+done
+
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"

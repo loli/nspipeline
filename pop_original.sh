@@ -3,9 +3,11 @@
 #####
 # Link images from the image database in a consitent manner to 00originals.
 # Links all images whose case ids are mentiones in "includes.sh".
+# Flips every second case mid-saggital to have some right-sided lesions.
 #####
 
 ## Changelog
+# 2014-05-05 every second case now gets flipped
 # 2014-03-24 changed to link sequence by availability (i.e. skip non-existing ones with only info message displayed)
 # 2013-11-13 changed to actually copy even existing files and to correct the qform and sform codes
 # 2013-10-15 changed the ADC creation script and added a conversion of non-float to float images
@@ -15,7 +17,10 @@
 source $(dirname $0)/include.sh
 
 # Constants
-sequencestolink=('flair_tra' 'dw_tra_b1000_dmean' 'adc_tra' 't1_tra_ffe' 't1_sag_tfe' 't2_sag_tse' 't2_tra_ffe' 't2_tra_tse') # where available
+sequencestolink=('flair_tra' 'dw_tra_b1000_dmean' 'adc_tra' 't1_tra_ffe' 't1_sag_tfe' 't2_sag_tse' 't2_tra_ffe' 't2_tra_tse') # where available / saggital dims = 0, 0, 0, 0, 2, 2, 0, 0
+declare -A sequencesflipdims=(  ['flair_tra']="0" ['dw_tra_b1000_dmean']="0" ['adc_tra']="0" ['t1_tra_ffe']="0" \
+				['t1_sag_tfe']="2" ['t2_sag_tse']="2" ['t2_tra_ffe']="0" ['t2_tra_tse']="0" )
+
 
 # Image collection HEOPKS details
 c01dir="/imagedata/HEOPKS/data/"
@@ -98,5 +103,17 @@ for i in "${images[@]}"; do
 		log 3 "No candidate for case id ${i} found in any of the collections. Please check your 'images' array. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	fi
 done
+
+log 2 "Flipping images of every second case in-place along the mid-saggital plane" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+for (( i = 1 ; i < ${#images[@]} ; i+=2 )) do
+	for s in "${sequencestolink[@]}"; do
+		f="${originals}/${images[$i]}/${s}.${imgfiletype}"
+		if [ -e ${f} ]; then
+			lnrealize "${f}"
+			runcond "${scripts}/flip.py ${f} ${sequencesflipdims[${s}]}"
+		fi
+	done
+done
+
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 

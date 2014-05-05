@@ -1,0 +1,40 @@
+Preparation
+###########
+Flip every second lesion from left to right and remoark in CHARACTERISTICS, whoch ones have been flipped.
+
+Default parameters
+##################
+cases#			38
+sequences		flair + X
+
+max tree-depth		500
+sampling#		250k
+sampling-strategy	startified random
+evaluation		original space
+post-processing		<750 (mm³)
+sub-sampling		3³
+pre-processing		inter-sequence registration
+			skull-strip
+			bias-filed removal
+			intensity standardization
+features		LH (11,10), LH (11,20), LH (11,30)
+			2D CD in all 3 dimensions
+			LMG (3), LMG (5), LMG (7)
+			Intensity
+			[GGM (5), Median (7)]
+
+Experiments
+###########
+Imp.	Type
++	A) All possible feature combinations
++	B) All possible pre-processing combinations
+-	C) Different parameters of post-processing step
++	D) Different RDF parameters
++	E) Different training set sizes
+-	F) Different training set sampling strategies
++	G) Variance of repeated training set sampling
++	H) Different sub-sampling
+++	I) All possible sequence combinations
++	J) Analysis of (final) trained forest for feature and sequence importances
++	K) Satistical influence of lesion and image attributes on the segmentation outcome
+

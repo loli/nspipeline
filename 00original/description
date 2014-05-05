@@ -10,3 +10,7 @@ Selection of cases and the mapping from database to case id are in "IMAGESELECTI
 Groupings according to different selection criteria can be found in "GROUPINGS.ods".
 
 All image with their original size, spacing and datatype.
+
+All lesions are left-sided. For balancing reasons, every second case is flipped along the
+mid-saggital plane to mimic a right-sided stroke. This is noted in
+"IMAGECHARACTERISTICS_COMBINED.ods".
