@@ -13,9 +13,6 @@
 # include shared information
 source $(dirname $0)/include.sh
 
-# constants
-basesequence="flair_tra" # the base-sequence to use for the skull-stripping to
-
 # functions
 ###
 # Compute a brain mask using the base sequence

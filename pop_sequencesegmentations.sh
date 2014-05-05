@@ -13,9 +13,6 @@
 # include shared information
 source $(dirname $0)/include.sh
 
-# constants
-basesequence="flair_tra" # the base-sequence the images have been registered to to
-
 # functions
 ###
 # Binary resampling of a mask

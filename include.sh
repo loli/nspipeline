@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2014-05-05 Removed normalized space directories.
 # 2014-05-05 Added the lnrealize() function.
 # 2014-03-25 Adapted directory structure.
 # 2014-03-24 Added the runcond function.
@@ -23,31 +24,21 @@ sequenceskullstripped="02flairskullstripped/"
 sequencebiasfieldcorrected="03biasfieldcorrected/"
 sequenceintensitrangestandardization="04flairintensitrangestandardization/"
 sequencelesionsegmentation="05flairlesionsegmentation/"
-stdspace="06stdspace/"
-stdskullstripped="07stdskullstripped/"
-stdbiasfieldcorrected="07stdskullstripped/"
-stdintensitrangestandardization="09stdintensitrangestandardization/"
-stdfeatureimages="10stdfeatureimages/"
-stdlesionsegmentation="11stdlesionsegmentation/"
-
 
 segmentations="100gtsegmentations/"
 sequencesegmentations="101flairsegmentations/"
 sequencebrainmasks="102flairbrainmasks/"
-stdsegmentations="103stdsegmentations/"
-stdbrainmasks="104stdbrainmasks/"
 
 scripts="scripts/"
 configs="configs/"
 
-# image arrays
+# image arrays and sequence settings
 images=('03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '15' '17' '18' '19' '20' '21' '22' '23' '25' '26' '28' '29' '30' '31' '32' '33' '34' '35' '36' '37' '39' '40' '41' '42' '43' '44' '45')
 sequences=("flair_tra") # sequences to use
+basesequence="flair_tra" # base sequence for all operation sin sequence space
 
 # other constants
 imgfiletype="nii.gz"
-#stdspace=('0.44921875' '0.44921875' '0.99999148') # the minimal common space of all spectra
-
 threadcount=6
 
 # logging
