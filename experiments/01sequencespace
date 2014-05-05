@@ -1,0 +1,5 @@
+FLAIR only:
+	Using native spacing would be nice, but will not work for sequences from other machines!
+	I have to fix the spacing for this. Lets say to 2x2x2.
+
+!TODO: Try pre-segmentation with other spacings too, such as 1x1x1 or 4x4x4. See how it affects the outcome!

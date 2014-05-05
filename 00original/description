@@ -1,0 +1,12 @@
+Holds the original images, some as softlinks, other as real files. One sub-folder per
+case, each with a different number of image files.
+
+The cases come from two different sources, the HEOPKS and JGABLENTZ image collections,
+but they all depict ischemic stroke lesions (although sometimes with small hemorrhages
+included).
+
+Image characteristics are listed in "IMAGECHARACTERISTICS_COMBINED.ods".
+Selection of cases and the mapping from database to case id are in "IMAGESELECTION.ods".
+Groupings according to different selection criteria can be found in "GROUPINGS.ods".
+
+All image with their original size, spacing and datatype.

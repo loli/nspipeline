@@ -1,0 +1,51 @@
+INFO: Extracting the features
+INFO: Drawing a training set for each leave-one-out case using stratified random sampling
+INFO: Training random decision forests
+INFO: Applying random decision forests to segment lesion
+INFO: Compute overall evaluation
+Metrics:
+Case	DC[0,1]	HD(mm)	P2C(mm)	recall	prec.	visual examination
+03	0.656	32.619	5.900	0.504	0.940	gut getroffen, aber untersegmentiert, da ausgefranst; kleine outlier
+04	0.641	102.762	10.029	0.678	0.607	gut segmentiert; teilweise schädel auch segmentiert; kleine WMH segmentiert
+05	0.516	36.277	7.797	0.349	0.991	gut getroffen, aber untersegmentiert, da ausgefranst; kleine outlier
+06	0.643	54.882	6.718	0.526	0.826	gut getroffen, leicht untersegmentiert; teilweise Schädeldecke; teil des Kleinhirns
+07	0.806	12.329	2.660	0.708	0.936	sehr gut getroffen; keine outlier
+08	0.614	33.941	6.819	0.445	0.987	gut getroffen, aber untersegmentiert; keine outlier
+09	0.548	55.064	7.665	0.727	0.440	kleine Läsion, gut getroffen, leicht übersegmentiert; outlier in kleinhirn und ventricularen Verfärbungen
+10	0.539	28.355	6.339	0.372	0.975	gut getroffen, leicht untersegmentiert; hemorrhage verfehlt; teilweise Schädeldecke
+11	0.716	20.591	2.393	0.598	0.893	sehr gut getroffen; keine outlier
+12	0.753	21.633	3.456	0.623	0.953	sehr gut getroffen; keine outlier
+13	0.773	25.768	3.273	0.669	0.914	sehr gut getroffen; keine outlier
+15	0.793	54.295	2.147	0.764	0.824	sehr gut getroffen; keine outlier
+17	0.814	48.000	2.460	0.758	0.880	sehr gut getroffen; keine outlier
+18	0.766	17.550	2.422	0.664	0.906	sehr gut getroffen; keine outlier
+19	0.500	17.321	4.258	0.409	0.641	gut getroffen, leicht untersegmentiert; keine outlier
+20	0.136	113.737	37.430	0.149	0.125	Läsion größtenteils verfehlt; viele, auch große outlier in Schädel und vorallem Neck
+21	0.565	99.056	9.028	0.415	0.888	aktzeptabel getroffen, aber untersegmentiert; outlier in Schädel und lower frontal lobe
+22	0.005	108.277	40.412	0.007	0.004	Läsion teilweise getroffen; zwei große outlier in Schädeldecke und Kleinhirn
+23	0.296	73.457	20.848	0.385	0.240	sehr gut getroffen; riesen-outlier im Kleinhirn
+25	0.114	120.300	42.297	0.084	0.177	mittelmäßig getroffen; mehrere outlier in Schädel, neck und Augen
+26	0.600	74.913	6.007	0.508	0.734	gut getroffen; kleinere outlier im Kleinhirn
+28	0.518	81.413	13.888	0.375	0.836	gut getroffen, aber untersegmentiert; outlier im Kleinhirn
+29	0.555	47.707	8.788	0.438	0.756	gut getroffen, aber untersegmentiert; keine outlier
+30	0.674	25.612	4.384	0.517	0.969	gut getroffen, leicht untersegmentiert; keine outlier
+31	0.632	17.550	2.841	0.492	0.884	gut getroffen, leicht untersegmentiert; keine outlier
+32	0.493	68.615	12.901	0.577	0.430	mittelmäßig getroffen, aber teils untersegmentiert, teils andere
+33	0.350	49.112	10.069	0.263	0.521	nur schlecht getroffen, sher untersegmentiert; outlier im Kleinhirn und anderen Regionen
+34	0.556	44.045	9.280	0.774	0.434	sehr gut getroffen; keine outlier; große Teile anderer WMHs
+35	0.806	27.928	2.739	0.702	0.945	sehr gut getroffen; keine outlier
+36	0.815	44.811	3.516	0.786	0.846	sehr gut getroffen; ein outlier in der Schädeldecke
+37	0.000	74.458	32.348	0.000	0.000	die kleine Läsion gar nicht getroffen; große teile anderer, dominante WMHs segmentiert; outlier Schädeldecke
+39	0.389	68.731	15.296	0.335	0.465	teilweise getroffen; outlier Schädeldecke; eine andere WMH
+40	0.490	46.390	7.263	0.326	0.979	getroffen, aber hochgradig untersegmentiert; keine outlier
+41	0.209	29.732	7.766	0.120	0.811	getroffen, aber hochgradig untersegmentiert; keine outlier
+42	0.453	67.231	18.245	0.422	0.490	gut getroffen, aber untersgmentiert; outlier Schädeldecke
+43	0.764	26.077	4.002	0.701	0.839	sehr gut getroffen; outlier Schädeldecke
+44	0.404	84.143	19.891	0.503	0.338	gut getroffen; outlier in Schädeldecke und Kleinhirn
+45	0.360	62.897	10.666	0.283	0.494	gut getroffen, leich untersegmentiert; keine outlier; eine ander WMH
+DM  average	0.533245133302 +/- 0.222033762265
+HD  average	53.0941769963 +/- 29.2872875356
+ASSD average	10.9010593851 +/- 10.5624481575
+Prec. average	0.682129390533 +/- 0.293397643638
+Rec. average	0.47257456164 +/- 0.214538042529
+INFO: Done.

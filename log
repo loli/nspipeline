@@ -1,0 +1,4 @@
+INFO: Procesing case 03
+INFO: Unpacking sequencespace images to .nii format
+INFO: Create inverses of preliminary lesion mask in basesequence space
+INFO: Create and run SPM Normalize Estimate step
