@@ -16,7 +16,7 @@ source $(dirname $0)/include.sh
 
 # constants
 isotropic=1 # 0/1 to disable/enable pre-registration resampling of base sequence to isotropic spacing
-isotropicspacing=2 # the target isotropic spacing in mm
+isotropicspacing=3 # the target isotropic spacing in mm
 
 # functions
 ###

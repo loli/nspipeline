@@ -21,8 +21,8 @@ features_to_extract = [
 	('flair_tra', local_mean_gauss, [3], True),
 	('flair_tra', local_mean_gauss, [5], True),
 	('flair_tra', local_mean_gauss, [7], True),
-	('flair_tra', guassian_gradient_magnitude, [5], True),
-	('flair_tra', median, [7], True),
+	#('flair_tra', guassian_gradient_magnitude, [5], True),
+	#('flair_tra', median, [7], True),
 	('flair_tra', local_histogram, [11, 'image', (0, 100), 5, None, None, 'ignore', 0], False), #11 bins, 5*2=10mm region
 	('flair_tra', local_histogram, [11, 'image', (0, 100), 10, None, None, 'ignore', 0], False), #11 bins, 10*2=20mm region
 	('flair_tra', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False), #11 bins, 15*2=30mm region
