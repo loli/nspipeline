@@ -6,6 +6,7 @@ arg1: directory with case-folders containing feature files
 arg2: directory containing segmentations
 arg3: string pointing to the cases brain masks with a {} in place of the case number
 arg4: index of current case
+arg5: number of samples to draw
 """
 
 import os
@@ -17,7 +18,6 @@ from medpy.io import load
 from medpy.features.utilities import append, join
 
 # main settings
-total_no_of_samples = 250000
 min_no_of_samples_per_class_and_case = 4
 
 # debug settings
@@ -26,6 +26,7 @@ debug = False
 
 def main():
 	# prepare settings
+	total_no_of_samples = int(sys.argv[5])
 	left_out_case = sys.argv[4]
 	src_dir = sys.argv[1]
 	seg_dir = sys.argv[2]

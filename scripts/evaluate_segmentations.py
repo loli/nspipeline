@@ -65,11 +65,11 @@ def main():
 	if not numpy.all(mask):
 		print 'WARNING: Average values only computed on {} of {} cases!'.format(numpy.count_nonzero(mask), mask.size)
 		
-    	print 'DM  average\t{} +/- {}'.format(numpy.asarray(dcs)[mask].mean(), numpy.asarray(dcs)[mask].std())
-    	print 'HD  average\t{} +/- {}'.format(numpy.asarray(hds)[mask].mean(), numpy.asarray(hds)[mask].std())
-    	print 'ASSD average\t{} +/- {}'.format(numpy.asarray(assds)[mask].mean(), numpy.asarray(assds)[mask].std())
-    	print 'Prec. average\t{} +/- {}'.format(numpy.asarray(precisions)[mask].mean(), numpy.asarray(precisions)[mask].std())
-    	print 'Rec. average\t{} +/- {}'.format(numpy.asarray(recalls)[mask].mean(), numpy.asarray(recalls)[mask].std())
+    	print 'DM  average\t{} +/- {} (Median: {})'.format(numpy.asarray(dcs)[mask].mean(), numpy.asarray(dcs)[mask].std(), numpy.median(numpy.asarray(dcs)[mask]))
+    	print 'HD  average\t{} +/- {} (Median: {})'.format(numpy.asarray(hds)[mask].mean(), numpy.asarray(hds)[mask].std(), numpy.median(numpy.asarray(hds)[mask]))
+    	print 'ASSD average\t{} +/- {} (Median: {})'.format(numpy.asarray(assds)[mask].mean(), numpy.asarray(assds)[mask].std(), numpy.median(numpy.asarray(assds)[mask]))
+    	print 'Prec. average\t{} +/- {} (Median: {})'.format(numpy.asarray(precisions)[mask].mean(), numpy.asarray(precisions)[mask].std(), numpy.median(numpy.asarray(precisions)[mask]))
+    	print 'Rec. average\t{} +/- {} (Median: {})'.format(numpy.asarray(recalls)[mask].mean(), numpy.asarray(recalls)[mask].std(), numpy.median(numpy.asarray(recalls)[mask]))
 
 def wdc(x):
 	return dc(*x)

@@ -29,13 +29,13 @@ log 2 "Drawing a training set for each leave-one-out case using stratified rando
 function sample_trainingset ()
 {
 	i=$1
-	runcond "${scripts}/sample_trainingset.py ${sequencelesionsegmentation}/ ${sequencesegmentations} ${sequencebrainmasks}/{}.${imgfiletype} ${i}"
+	runcond "${scripts}/sample_trainingset.py ${sequencelesionsegmentation}/ ${sequencesegmentations} ${sequencebrainmasks}/{}.${imgfiletype} ${i} ${samplesize}"
 }
 parallelize sample_trainingset ${threadcount} images[@]
 
 log 2 "Training random decision forests" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
-	runcond "${scripts}/train_rdf.py ${sequencelesionsegmentation}/${i}/trainingset.features.npy ${sequencelesionsegmentation}/${i}/forest.pkl"
+	runcond "${scripts}/train_rdf.py ${sequencelesionsegmentation}/${i}/trainingset.features.npy ${sequencelesionsegmentation}/${i}/forest.pkl ${maxdepth}"
 done
 
 log 2 "Applying random decision forests to segment lesion" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
@@ -47,12 +47,12 @@ log 2 "Morphological post-processing" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 function post_processing ()
 {
 	i=$1
-	runcond "${scripts}/remove_small_objects.py ${sequencelesionsegmentation}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${i}/segmentation_post.nii.gz 750"
+	runcond "${scripts}/remove_small_objects.py ${sequencelesionsegmentation}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${i}/segmentation_post.nii.gz ${minimallesionsize}"
 }
 parallelize post_processing ${threadcount} images[@]
 
-log 2 "Compute overall evaluation" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-runcond "${scripts}/evaluate_segmentations.py ${sequencelesionsegmentation}/{}/segmentation_post.${imgfiletype} ${sequencesegmentations}/{}.${imgfiletype} ${sequencebrainmasks}/{}.${imgfiletype} $(joinarr " " ${images[@]})"
+#log 2 "Compute overall evaluation" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+#runcond "${scripts}/evaluate_segmentations.py ${sequencelesionsegmentation}/{}/segmentation_post.${imgfiletype} ${sequencesegmentations}/{}.${imgfiletype} ${sequencebrainmasks}/{}.${imgfiletype} $(joinarr " " ${images[@]})"
 
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 
