@@ -6,6 +6,7 @@ arg1: the decision forest file
 arg2: the case folder holding the feature files
 arg3: the cases mask file
 arg4: the target segmentation file
+arg5: the target probability file
 """
 
 import os
@@ -21,6 +22,7 @@ from medpy.features.utilities import join
 
 # constants
 n_jobs = 6
+probability_threshold = 0.5
 
 def main():
 	# catch parameters
@@ -28,6 +30,7 @@ def main():
 	case_folder = sys.argv[2]
 	mask_file = sys.argv[3]
 	segmentation_file = sys.argv[4]
+	probability_file = sys.argv[5]
 
         # loading case features
 	feature_vector = []
@@ -42,36 +45,23 @@ def main():
 	# load and apply the decision forest
 	with open(forest_file, 'r') as f:
 		forest = pickle.load(f)
-	classification_results = forest.predict(feature_vector)
+	probability_results = forest.predict_proba(feature_vector)[:,1]
+	classification_results = probability_results > probability_threshold # equivalent to forest.predict
 
 	# preparing  image
 	m, h = load(mask_file)
     	m = m.astype(numpy.bool)
-    	o = numpy.zeros(m.shape, numpy.uint8)
-    	o[m] = numpy.squeeze(classification_results).ravel()
+    	oc = numpy.zeros(m.shape, numpy.uint8)
+	op = numpy.zeros(m.shape, numpy.float32)
+    	oc[m] = numpy.squeeze(classification_results).ravel()
+	op[m] = numpy.squeeze(probability_results).ravel()
 
 	# applying the post-processing morphology
-	#o = binary_dilation(o, iterations=2)
-	#o = keep_largest_connected_component(o)
-	o = binary_fill_holes(o)
+	oc = binary_fill_holes(oc)
 
-	# savin the results
-    	save(o, segmentation_file, h, True)
-
-def keep_largest_connected_component(img):
-    labeled_array, num_features = label(img)
-    largest_size = 0
-    largest_idx = 0
-    for idx in range(1, num_features + 1):
-        size = numpy.count_nonzero(labeled_array == idx)
-        if size > largest_size:
-            largest_idx = idx
-            largest_size = size
-          
-    out = numpy.zeros(img.shape, numpy.bool)  
-    out[labeled_array == largest_idx] = True
-    return out
-    # Note: generate_binary_structure(2,2) also considers diagonal connectivity
+	# saving the results
+    	save(oc, segmentation_file, h, True)
+    	save(op, probability_file, h, True)
 
 if __name__ == "__main__":
 	main()

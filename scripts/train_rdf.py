@@ -4,7 +4,7 @@
 Train a decision forest on a training set.
 arg1: the training set file (.features.npy)
 arg2: the decision forest target file
-arg3: the maximum tree depth (optional)
+arg4: the maximum tree depth (optional)
 """
 
 import sys
@@ -21,10 +21,7 @@ def main():
 	training_set_features = sys.argv[1]
 	training_set_classes = training_set_features.replace('features', 'classes')
 	forest_file = sys.argv[2]
-	if 3 == len(sys.argv):
-		max_depth = int(sy.argv[3])
-	else:
-		max_depth = 500
+	max_depth = int(sy.argv[4]) if 3 == len(sys.argv) else 500
 
         # loading training features
         with open(training_set_features, 'r') as f:
@@ -34,7 +31,6 @@ def main():
         with open(training_set_classes , 'r') as f:
             training_class_vector = numpy.load(f)
 	
-
         # prepare and train the decision forest
         forest = ExtraTreesClassifier(n_estimators=200,
                             criterion = 'entropy',

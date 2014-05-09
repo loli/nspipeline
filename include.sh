@@ -5,6 +5,7 @@
 ########################################
 
 ## changelog
+# 2014-05-08 Adapted to the new, distributed calculation scheme.
 # 2014-05-08 Transfered some settings to a config file and included it here.
 # 2014-05-05 Removed normalized space directories.
 # 2014-05-05 Added the lnrealize() function.
@@ -28,8 +29,9 @@ sequenceskullstripped="02flairskullstripped/"
 sequencebiasfieldcorrected="03biasfieldcorrected/"
 sequenceintensitrangestandardization="04flairintensitrangestandardization/"
 sequencefeatures="05flairfeatures/"
-sequenceforests="06forests/"
-sequencelesionsegmentation="07flairlesionsegmentation/"
+sequencesamplesets="06samplesets/"
+sequenceforests="07forests/"
+sequencelesionsegmentation="08flairlesionsegmentation/"
 
 segmentations="100gtsegmentations/"
 sequencesegmentations="101flairsegmentations/"
@@ -253,6 +255,35 @@ function joinarr () {
 	local IFS="${1}"
 	shift
 	echo "$*"
+}
+
+#####
+# Returns a new version of an array with the passed element removed from it.
+# Call like: newarray=( $(delEl element array[@]) )
+# If the element could not be found, the original array is returned
+# Exit codes (available from $?): 0 on success, 1 if the element could not be found
+#####
+function delEl {
+	declare -a arr=("${!2}") # Note: decalre has scope limited to function
+	local pos=$(isAt $1 arr[@])
+	if [[ $pos -lt 0 ]]; then echo "${arr[@]}" && return 1; fi
+	local newarr=(${arr[@]:0:$pos} ${arr[@]:$(($pos + 1))})
+	echo "${newarr[@]}"
+	return 0
+}
+
+#####
+# Returns the position of the first occurence of an element in an array.
+# Call like: pos=$(isAt element array[@])
+# If the element could not be found, the return value (not! exit code) will be a negative integer
+# Exit codes (available from $?): 0 on success, 1 if the element could not be found
+#####
+isAt () {
+	declare -a arr=("${!2}")
+	local e
+	for e in "${!arr[@]}"; do [[ "${arr[$e]}" == "$1" ]] && echo ${e} && return 0; done
+	echo -1
+	return 1
 }
 
 ###
