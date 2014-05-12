@@ -8,6 +8,7 @@
 
 # arg1: the first evaluation file
 # arg2: the second evaluation file
+# arg3: pass anything to print out the case-wise results and differences
 
 pborder = 0.05
 
@@ -36,17 +37,34 @@ def parse_evaluation_file(fn):
 
 r1, h1 = parse_evaluation_file(sys.argv[1])
 r2, h2 = parse_evaluation_file(sys.argv[2])
+print_casewise = len(sys.argv) > 3
 
 if not r1.keys() == r2.keys():
-	print 'Error: The cases in the two evaluation files differ.'
+	print 'WARNING: The cases in the two evaluation files differ.'
 	print 'Symmetric difference is: {}'.format(set.symmetric_difference(set(r1.iterkeys()), set(r2.iterkeys())))
-	sys.exit(-1)
+	print 'Continuing, but considering common cases only: {}'.format(set.intersection(set(r1.iterkeys()), set(r2.iterkeys())))
+
+	for key in set.difference(set(r1.keys()), r2.keys()):
+		del r1[key]
+	for key in set.difference(set(r2.keys()), r1.keys()):
+		del r2[key]
 
 if not h1 == h2:
-	print 'Error: Incompatible quality metrics.'
+	print 'ERROR: Incompatible quality metrics.'
 	print 'Evaluation file {} contains {}.'.format(sys.argv[1], h1)
 	print 'Evaluation file {} contains {}.'.format(sys.argv[2], h2)
 	sys.exit(-1)
+
+
+# print case-wise if requested
+if print_casewise:
+	print '\nCase\tRun\t{}'.format('\t'.join(h1[1:]))
+	for key in sorted(r1):
+		print '{}\tr1\t{}'.format(key, '\t'.join(map(str, r1[key])))
+		print '\tr2\t{}'.format('\t'.join(map(str, r2[key])))
+		print '\tdiff\t{}'.format('\t'.join(map(str, numpy.subtract(r1[key], r2[key]))))
+	print
+
 
 # remove failed cases
 failedno = 0
@@ -64,8 +82,10 @@ for key, scores in list(r2.iteritems()):
 		del r1[key]
 		del r2[key]
 if not 0 == failedno:
-	print 'WARNING: Statistics only computed for {} of {} cases, as some segmentations failed in at least one of the compared evaluation results!'.format(len(r1) - failedno, len(r1))
+	print 'WARNING: Statistics only computed for {} of {} cases, as some segmentations failed in at least one of the compared evaluation results!'.format(len(r1), len(r1) + failedno)
 
+
+# print statistics
 print 'Statistical significance between results obtained for run r1 ({}) against run r2 ({}) on {} cases:'.format(sys.argv[1], sys.argv[2], len(r1))
 print 'Applied test: Paired t-test for two related samples of scores.'
 print 'Metric\tmean-r1\tmean-r2\tdiff\tt-value\tp-value\tsignificant<{}'.format(pborder)
