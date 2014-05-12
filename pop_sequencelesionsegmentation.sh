@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #####
-# Creates a preliminary segmentation of the brain lesion in sequence space.
-# ! Remember to run pop_sequencesegmentations.sh before this script.
+# APplyies the forests to a (preliminary) segmentation of the brain lesion in sequence space.
 #####
 
 ## Changelog
@@ -20,7 +19,7 @@ source $(dirname $0)/include.sh
 log 2 "Applying random decision forests to segment lesion" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
 	mkdircond ${sequencelesionsegmentation}/${i}
-	runcond "${scripts}/apply_rdf.py ${sequenceforests}/${i}.pkl ${sequencefeatures}/${i}/ ${sequencebrainmasks}/${i}.nii.gz ${sequencelesionsegmentation}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${i}/probabilities.nii.gz"
+	runcond "${scripts}/apply_rdf.py ${sequenceforests}/${i}.pkl ${sequencefeatures}/${i}/ ${sequencebrainmasks}/${i}.nii.gz ${featurecnf} ${sequencelesionsegmentation}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${i}/probabilities.nii.gz"
 done
 
 log 2 "Morphological post-processing" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"

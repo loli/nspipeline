@@ -5,12 +5,14 @@ Apply an RDF to a case.
 arg1: the decision forest file
 arg2: the case folder holding the feature files
 arg3: the cases mask file
-arg4: the target segmentation file
-arg5: the target probability file
+arg4: file containing a struct identifying the features to use
+arg5: the target segmentation file
+arg6: the target probability file
 """
 
 import os
 import sys
+import imp
 import pickle
 import numpy
 
@@ -29,15 +31,22 @@ def main():
 	forest_file = sys.argv[1]
 	case_folder = sys.argv[2]
 	mask_file = sys.argv[3]
-	segmentation_file = sys.argv[4]
-	probability_file = sys.argv[5]
+	feature_cnf_file = sys.argv[4]
+	segmentation_file = sys.argv[5]
+	probability_file = sys.argv[6]
+
+	# load features to use and create proper names from them
+	features_to_use = load_feature_names(feature_cnf_file)
 
         # loading case features
 	feature_vector = []
-	for _file in os.listdir(case_folder):
-		if _file.endswith('.npy') and _file.startswith('feature.'):
-			with open(os.path.join(case_folder, _file), 'r') as f:
-				feature_vector.append(numpy.load(f))
+
+	for feature_name in features_to_use:
+		_file = os.path.join(case_folder, '{}.npy'.format(feature_name))
+		if not os.path.isfile(_file):
+			raise Exception('The feature "{}" could not be found in folder "{}". Breaking.'.format(feature_name, case_folder))
+		with open(_file, 'r') as f:
+			feature_vector.append(numpy.load(f))
 	feature_vector = join(*feature_vector)
 	if 1 == feature_vector.ndim:
 		feature_vector = numpy.expand_dims(feature_vector, -1)
@@ -62,6 +71,21 @@ def main():
 	# saving the results
     	save(oc, segmentation_file, h, True)
     	save(op, probability_file, h, True)
+
+def feature_struct_entry_to_name(fstruct):
+	seq, fcall, fargs, _ = fstruct
+	return 'feature.{}.{}.{}'.format(seq, fcall.func_name, '_'.join(['arg{}'.format(i) for i in fargs]))
+	
+def load_feature_struct(f):
+	"Load the feature struct from a feature config file."
+	d, m = os.path.split(os.path.splitext(f)[0])
+	f, filename, desc = imp.find_module(m, [d])
+	return imp.load_module(m, f, filename, desc).features_to_extract
+
+def load_feature_names(f):
+	"Load the feature names from a feature config file."
+	fs = load_feature_struct(f)
+	return [feature_struct_entry_to_name(e) for e in fs]
 
 if __name__ == "__main__":
 	main()
