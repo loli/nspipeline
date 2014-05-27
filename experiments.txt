@@ -7,11 +7,11 @@ Default parameters
 cases#			38
 sequences		flair + X
 
-max tree-depth		500
+max tree-depth		100
 sampling#		250k
 sampling-strategy	startified random
 evaluation		original space
-post-processing		<750 (mm³)
+post-processing		<1500 (mm³)
 sub-sampling		3³
 pre-processing		inter-sequence registration
 			skull-strip

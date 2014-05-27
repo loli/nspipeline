@@ -1,0 +1,96 @@
+Description
+###########
+Experiment conducted with Michael from Heidelberg, where compared parallel forests with normal forests and alternating nodes.
+
+Overall Conclusion
+##################
+Parallel forests are not very promising. Alternating node mixed forests perform significantly better than RDF and en-pa with ETs.
+
+Configurations
+##############
+A) RDF		Random Decision Forest, 200 trees
+B) ET		Extra Tree Forest, 200 trees
+C) parallel	100 trees from A) and 100 trees from B) combined for voting
+D) alternating	Mixed Decision Forest with alternating nodes i.e. 200 trees with nodes alternating between ET and RDF types
+
+
+Exp 01: Evaluation on one case
+##############################
+Conclusion:
+	Parallel configuration does not seem to lead to any gain, but the alternating is more promising.
+
+ET:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.772	33.136	4.429	0.961	0.645
+RDF:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.768	33.136	4.504	0.963	0.639
+ET+RDF combined in parallel:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.771	33.136	4.456	0.963	0.644
+ET+RDF alternating nodes:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.784	31.464	4.194	0.955	0.665
+
+
+
+EXP 02: Evaluating on a couple of cases
+#######################################
+Conclusion: 
+	Alternating nodes are significantly (students t-test) better than RDF configuration, but they only perform en-pa with the ET configuration (no significant difference).
+	Later experiments showed this observation to be true over all images.
+
+ET+RDF alternating nodes:
+Metrics:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.784	31.464	4.194	0.955	0.665
+05	0.628	24.187	6.961	0.997	0.458
+07	0.887	13.748	1.736	0.945	0.835
+09	0.683	10.392	2.160	0.801	0.595
+10	0.577	26.325	6.227	0.975	0.409
+11	0.545	28.460	4.479	0.909	0.389
+12	0.799	24.556	3.103	0.954	0.687
+13	0.848	22.450	2.525	0.873	0.825
+15	0.810	11.225	2.230	0.744	0.890
+DM  average	0.729022712393 +/- 0.116863474967 (Median: 0.783839457771)
+HD  average	21.4230486134 +/- 7.28374821834 (Median: 24.1867732449)
+ASSD average	3.73497668983 +/- 1.76344566554 (Median: 3.10330283165)
+Prec. average	0.906054418591 +/- 0.0801092619555 (Median: 0.945259593679)
+Rec. average	0.639303346209 +/- 0.179001319346 (Median: 0.664563380282)
+
+RDF:
+Metrics:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.768	33.136	4.504	0.963	0.639
+05	0.581	24.187	7.813	0.996	0.411
+07	0.870	15.297	1.979	0.960	0.795
+09	0.600	11.225	2.592	0.813	0.476
+10	0.503	27.000	7.228	0.976	0.339
+11	0.539	29.698	4.659	0.889	0.386
+12	0.718	25.807	4.164	0.976	0.568
+13	0.844	23.431	2.580	0.876	0.815
+15	0.814	11.225	2.176	0.758	0.880
+DM  average	0.693227016817 +/- 0.131685609312 (Median: 0.718453865337)
+HD  average	22.3340076441 +/- 7.4961391766 (Median: 24.1867732449)
+ASSD average	4.18821780954 +/- 2.02112629691 (Median: 4.16448404939)
+Prec. average	0.912045380975 +/- 0.0785194965171 (Median: 0.960248945995)
+Rec. average	0.589819571264 +/- 0.191159489112 (Median: 0.568356677846)
+
+ET:
+Metrics:
+Case	DC[0,1]	HD(mm)	P2C(mm)	prec.	recall
+03	0.765	31.464	4.545	0.958	0.636
+05	0.600	23.622	7.485	0.996	0.429
+07	0.884	12.369	1.797	0.943	0.832
+09	0.683	10.817	2.225	0.795	0.598
+10	0.535	29.547	6.783	0.976	0.369
+11	0.602	29.547	4.106	0.936	0.443
+12	0.769	24.920	3.492	0.967	0.638
+13	0.853	22.650	2.471	0.872	0.835
+15	0.818	11.225	2.116	0.757	0.891
+DM  average	0.7232222222
+HD  average	21.7956666667
+ASSD average	3.8911111111
+Prec. average	0.9111111111
+Rec. average	0.6301111111
+

@@ -1,0 +1,24 @@
+Description
+###########
+Together with Michael from Heidelberg, I devised four Mixed Node Forests types
+AlternatingNode-TreeClassifier
+AdaptiveNode-
+RandomNode-
+StackedNode-
+which we tested on a number of standard classification datasets and compared agains RDF and ET in various configurations.
+
+Location
+########
+/data_humbug1/maier/Temp_Playground/mixednodeforests
+
+Conclusion
+##########
+The observations made in the ET paper by Geurts et al. could largely be confirmed.
+Our AlternatingNode method performed en-pa with the ETs and better than the RDFs.
+Our other methods performed laregly worse than the ETs, more along the line of the RDFs.
+For some few problems the RDF outperformed the ET. In these cases, the AlternatingNode method didn't suffer the same drop in accuracy as the ET i.e. they mght be slightly more robust.
+
+Overall, it sadly has to be said that our methods did not lead to any real improvement on the problems to which we applied them.
+
+
+

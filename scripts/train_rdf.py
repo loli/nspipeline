@@ -12,6 +12,8 @@ import pickle
 import numpy
 
 from sklearn.ensemble.forest import ExtraTreesClassifier
+from sklearn.ensemble.forest import RandomForestClassifier
+#from sklearn.ensemble.forest import MixedForestClassifier
 
 # constants
 n_jobs = 6
@@ -21,7 +23,7 @@ def main():
 	training_set_features = sys.argv[1]
 	training_set_classes = training_set_features.replace('features', 'classes')
 	forest_file = sys.argv[2]
-	max_depth = int(sy.argv[4]) if 3 == len(sys.argv) else 500
+	max_depth = int(sys.argv[3]) if 3 <= len(sys.argv) else 500
 
         # loading training features
         with open(training_set_features, 'r') as f:
@@ -34,13 +36,14 @@ def main():
         # prepare and train the decision forest
         forest = ExtraTreesClassifier(n_estimators=200,
                             criterion = 'entropy',
-                            max_features = None,
+                            max_features = 'auto', # rdf: auto / et: None
+			    #splitter="alternatingnode",
                             min_samples_split = 2,
                             min_samples_leaf = 1,
 			    max_depth = max_depth,
                             bootstrap = True,
                             oob_score = False,
-                            random_state=0,
+                            random_state=None,
                             n_jobs=n_jobs,
                             compute_importances=True)
         forest.fit(training_feature_vector, training_class_vector)

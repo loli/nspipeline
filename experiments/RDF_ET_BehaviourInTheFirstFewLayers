@@ -1,0 +1,99 @@
+Description
+###########
+Experiments conducted with Michael from Heidelberg to get an idea of the forests behaviour in the first few (and potentially most important) layers of the tree.
+
+Configurations
+##############
+The Forest with different configurations are trained on a few exemplary images using restricted depth. The changes in accuracy as well as the selected features at each level are investigated.
+
+Overall Conclusion
+##################
+Overall:
+	Already the first splits are quite strong and take care of most of the segmentation. Later splits do largely improve HD and ASSD i.e. outliers are excluded and the segmentation border improved.
+	Overfitting does not seem to be an issue.
+
+ET only forest:
+	Intensity-based features (especially gauss and some histogram bins of flair and DW) dominate in the first layers.
+	After depth 8-10, a kind of saturation is reached and all features are +/- equally chosen for one layer.
+	Then the feature intensity, gauss3, gauss5, gauss7 dominate the nodes increasingly till the end of the tree.
+
+	Surprisingly, the accuracy surpasses the RDF already at a depth of 2, which is unexpted considering the random cuts.
+	Compared to the RDF, the ET does not show any tendency of overfitting for the three cases investigated here.
+	
+
+RDF only forest:
+	Intensity-based features (especially gauss and some histogram bins of flair and DW) dominate in the first layers.
+	After depth 8-10, a saturation is reached and all features are +/- equally chosen.
+
+	Already at a depth of 4, the segmentation quality is quite high. Training deeper than level 9 improves the results for two of the tree cases and lowers them in one.
+	Some prunning of the tree might be in order to avoid overfitting, although no strong tendency can be observed.
+	
+
+Experiment
+##########
+
+RDF
+###
+max_depth=1
+No probability >= 0.5, no segmentation
+Probability mask displays slight evidence of lesion, a segmenting cut of >=0.2 might have lead to some results.
+
+max_depth=2
+03	0.390	43.370	10.639	0.993	0.243
+05	0.262	38.066	14.284	1.000	0.151
+07	0.496	25.807	6.486	0.995	0.331
+
+max_depth=3
+03	0.583	38.536	7.720	0.974	0.417
+05	0.386	34.073	11.302	1.000	0.239
+07	0.693	20.125	4.205	0.983	0.536
+
+max_depth=4
+03	0.645	35.623	6.611	0.970	0.483
+05	0.430	32.031	10.436	1.000	0.274
+07	0.771	18.000	3.264	0.978	0.636
+
+max_depth=9 (observed point of saturation)
+03	0.734	33.136	5.109	0.965	0.592
+05	0.540	27.821	8.492	0.997	0.370
+07	0.852	15.297	2.217	0.970	0.759
+
+max_depth=None
+03	0.760	31.931	4.374	0.972	0.624
+05	0.568	23.034	8.057	0.999	0.397
+07	0.846	15.664	1.746	0.963	0.755
+
+
+ET
+##
+max_depth=1
+No probability >= 0.5, no segmentation
+Probability mask displays slight evidence of lesion, a segmenting cut of >=0.2 might have lead to some results.
+
+max_depth=2
+03	0.395	40.137	11.336	0.982	0.247
+05	0.292	36.986	14.000	1.000	0.171
+07	0.660	22.045	4.745	0.978	0.498
+real	15m48.569s
+user	86m0.959s
+
+max_depth=3
+03	0.599	37.229	7.525	0.973	0.432
+05	0.400	33.136	11.325	0.999	0.250
+07	0.766	18.974	3.386	0.968	0.633
+
+max_depth=4
+03	0.652	35.369	6.557	0.963	0.492
+05	0.447	32.450	10.462	0.999	0.288
+07	0.808	17.234	2.852	0.960	0.698
+
+max_depth=9 (observed point of saturation)
+03	0.739	33.541	5.011	0.965	0.598
+05	0.540	26.495	8.495	0.998	0.370
+07	0.867	14.697	2.044	0.955	0.794
+
+max_depth=None
+03	0.765	31.464	4.545	0.958	0.636
+05	0.600	23.622	7.485	0.996	0.429
+07	0.884	12.369	1.797	0.943	0.832
+
