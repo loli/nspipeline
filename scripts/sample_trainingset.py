@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Sample a traning set for a case by drawing from all other images using sstratified random sampling.
+Sample a traning set for a case by drawing from all other images using stratified random sampling.
 
 arg1: directory with case-folders containing feature files
 arg2: directory containing segmentations
@@ -16,6 +16,7 @@ import os
 import sys
 import imp
 import numpy
+import pickle
 import itertools
 
 from medpy.io import load
@@ -25,9 +26,9 @@ from medpy.features.utilities import append, join
 min_no_of_samples_per_class_and_case = 4
 
 # debug settings
-verboose = False
+verboose = True
 debug = False
-override = False # activate override (will signal a warning)
+override = True # activate override (will signal a warning)
 
 def main():
 	# catch arguments
@@ -136,6 +137,10 @@ def main():
 		numpy.save(f, samples_class_memberships)
 	with open('{}/trainingset.fnames.npy'.format(trg_dir), 'wb') as f:
 		numpy.save(f, features_to_use)
+	with open('{}/trainingset.fgselections.pkl'.format(trg_dir), 'wb') as f:
+		pickle.dump(training_set_foreground_selections, f)
+	with open('{}/trainingset.bgselections.pkl'.format(trg_dir), 'wb') as f:
+		pickle.dump(training_set_background_selections, f)
 		
 	if verboose: print
 			
