@@ -2,16 +2,41 @@
 # Configuration file: Denotes the features to extract
 ####
 
-from medpy.features.intensity import intensities, centerdistance, centerdistance_xdminus1, local_mean_gauss, local_histogram, hemispheric_difference, median, guassian_gradient_magnitude
+from medpy.features.intensity import intensities, centerdistance, centerdistance_xdminus1, local_mean_gauss, local_histogram, hemispheric_difference, median, guassian_gradient_magnitude, shifted_mean_gauss
 from medpy.features.intensity import indices as indices_feature
 
 _flair = [
 	('flair_tra', intensities, [], False),
+	#('flair_tra', shifted_mean_gauss, [(2, 2, 2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(2, 2, -2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(2, -2, 2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-2, 2, 2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(2, -2, -2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-2, 2, -2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-2, -2, 2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-2, -2, -2), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(1, 1, 1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(1, 1, -1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(1, -1, 1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-1, 1, 1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(1, -1, -1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-1, 1, -1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-1, -1, 1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-1, -1, -1), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(4, 4, 4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(4, 4, -4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(4, -4, 4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-4, 4, 4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(4, -4, -4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-4, 4, -4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-4, -4, 4), 3], True),
+	#('flair_tra', shifted_mean_gauss, [(-4, -4, -4), 3], True),
 	('flair_tra', local_mean_gauss, [3], True),
 	('flair_tra', local_mean_gauss, [5], True),
 	('flair_tra', local_mean_gauss, [7], True),
 	#('flair_tra', guassian_gradient_magnitude, [5], True),
 	#('flair_tra', median, [7], True),
+	#('flair_tra', indices_feature, [], True),
 	('flair_tra', local_histogram, [11, 'image', (0, 100), 5, None, None, 'ignore', 0], False), #11 bins, 5*2=10mm region
 	('flair_tra', local_histogram, [11, 'image', (0, 100), 10, None, None, 'ignore', 0], False), #11 bins, 10*2=20mm region
 	('flair_tra', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False), #11 bins, 15*2=30mm region
@@ -80,6 +105,6 @@ _t2 = [
 	#('t2_sag_tse', centerdistance_xdminus1, [2], True)
 ]
 
-features_to_extract = _flait + _t2
+features_to_extract = _flair # + _t1 + _t2 + _dw + _adc
 
 

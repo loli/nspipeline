@@ -13,6 +13,6 @@ source $(dirname $0)/include.sh
 # main code
 log 2 "Training random decision forests" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
-	runcond "${scripts}/train_rdf.py ${sequencesamplesets}/${i}/trainingset.features.npy ${sequenceforests}/${i}.pkl ${maxdepth}"
+	runcond "scripts/train_rdf.py ${sequencesamplesets}/${i}/trainingset.features.npy ${sequenceforests}/${i}.pkl ${maxdepth}"
 done
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"

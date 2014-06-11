@@ -26,9 +26,9 @@ from medpy.features.utilities import append, join
 min_no_of_samples_per_class_and_case = 4
 
 # debug settings
-verboose = True
+verboose = False
 debug = False
-override = True # activate override (will signal a warning)
+override = False # activate override (will signal a warning)
 
 def main():
 	# catch arguments

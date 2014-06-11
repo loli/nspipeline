@@ -23,6 +23,7 @@ n_jobs = 6
 silent = True
 
 def main():
+
 	# catch parameters
 	segmentation_base_string = sys.argv[1]
 	ground_truth_base_string = sys.argv[2]
