@@ -132,6 +132,17 @@ def main():
 	    
     	logger.info("Successfully terminated.")
 
+def __figure_set_colors(fig):
+	import matplotlib
+
+	ax = fig.add_subplot(1, 1, 1)
+	for child in ax.get_children():
+	    if isinstance(child, matplotlib.spines.Spine):
+		child.set_color('#004b5a')
+
+	ax.tick_params(axis='x', colors='#004b5a')
+	ax.tick_params(axis='y', colors='#004b5a')
+
 def print_boxplot(header, result, prefix):
 	"Prints the results ready for gnuplot parsing."
 	import matplotlib.pyplot as plt
@@ -147,6 +158,9 @@ def print_boxplot(header, result, prefix):
 
 	# create and save a plot for each evaluation measure
 	for i, h in enumerate(header[1:]):
+		fig = plt.figure()
+		__figure_set_colors(fig)
+	
 		# collect data by evaluation type
 		data = [d[i] for d in result.itervalues()]
 		
@@ -156,13 +170,28 @@ def print_boxplot(header, result, prefix):
 			invalid.append(data[idx])
 			del data[idx]
 		
-		# plot boxplot as well as data points
-		plt.plot([1] * len(data), data, 'go')
-		plt.boxplot(data, notch=1)
-		#plt.plot([1] * len(invalid), invalid, 'ro')
+		# plot boxplot
+		layout = plt.boxplot(data, notch=1, sym='o', patch_artist=True)
+
+		# change colours of boxplot elements
+		for box in layout['boxes']:
+			box.set_facecolor('#eac43d')
+			box.set_edgecolor('#b08a06')
+		for whisker in layout['whiskers']:
+			whisker.set_color('#788c23')
+		for median in layout['medians']:
+			median.set_color('#B51621')
+		for cap in layout['caps']:
+			cap.set_color('#788c23')
+		for flier in layout['fliers']:
+			flier.set_color('#a0bb2f')
+
+		# increase label size
+		plt.tick_params(axis='y', which='major', labelsize=25)
+
 		#plt.show()
 		plt.savefig("tmp/{}_boxplot_{}.pdf".format(prefix, h))
-		plt.clf()
+		#plt.clf()
 
 def print_latex(header, result, summary):
 	"Prints the parsed evaluation results in latex table format."
