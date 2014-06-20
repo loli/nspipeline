@@ -22,6 +22,14 @@ from medpy.io import load, save
 
 # constants
 EXLUDED_FILES = ['37', '44']
+MARKER_W_LINE = (':o', ':v', ':s', ':*')
+MARKER_WO_LINE = ('o', 'v', 's', '*')
+STD_SETTINGS_LINE_COLOUR = 'y'
+STD_SETTINGS_LINE_WIDTH = 2
+
+PARAMETER_POSITION = 4 # 2
+PARAMETER_REPLACEMENTS = {} # {'all': 10899312}
+PARAMETER_TYPE = int
 
 
 # information
@@ -62,7 +70,11 @@ def main():
 	logger.info("Parsing the evaluation files.")
 	parameters = []
 	for fn in args.inputs:
-		parameters.append(int(fn.split('.')[2])) #4
+		parameter_chunk = fn.split('.')[PARAMETER_POSITION]
+		if parameter_chunk in PARAMETER_REPLACEMENTS:
+			parameters.append(PARAMETER_REPLACEMENTS[parameter_chunk])
+		else:
+			parameters.append(PARAMETER_TYPE(parameter_chunk))
 		eva = Evaluation()
 		eva.parse(fn, EXLUDED_FILES)
 		dms.append(eva.mean('DC[0,1]', -1))
@@ -86,10 +98,12 @@ def main():
 	#plot(args.output, parameters, '#depth', (dms, precisions, recalls), (assds,), ('DC/F1', 'Prec.', 'Rec.'), ('ASSD',))
 	#plot_minsamples(args.output, parameters, '#samples', (dms, precisions, recalls), (None,), ('DC/F1', 'Prec.', 'Rec.'), (None,))
 	#plot_maxfeatures(args.output, parameters, '#features', (dms, precisions, recalls), (None,), ('DC/F1', 'Prec.', 'Rec.'), (None,))
-	#plot_depth(args.output, parameters, '#tree-depth', (dms, precisions, recalls), (None,), ('DC/F1', 'Prec.', 'Rec.'), (None,))
-	#plot_trees(args.output, parameters, '#forests', (dms, precisions, recalls), (None,), ('DC/F1', 'Prec.', 'Rec.'), (None,))
+	plot_depth(args.output, parameters, '#tree-depth', (dms, precisions, recalls), (None,), ('DC/F1', 'Prec.', 'Rec.'), (None,))
+	#plot_trees(args.output, parameters, '#trees', (dms, precisions, recalls), (None,), ('DC/F1', 'Prec.', 'Rec.'), (None,))
+	#plot_samplesize(args.output, parameters, '#training-samples', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
 	#plot_onesided(args.output, parameters, 'sequence combination', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
-	plot_sequence_combinations(args.output, parameters, 'sequence combination', (dms, ), (r'$DC/F_1$', ))
+	#plot_sequence_combinations(args.output, parameters, 'sequence combination', (dms, ), (r'$DC/F_1$', ))
+	#plot_feature_combinations(args.output, parameters, 'feature combination', (dms, ), (r'$DC/F_1$', ))
 	
     	logger.info("Successfully terminated.")
 
@@ -141,7 +155,30 @@ def plot_onesided(filename, x, x_label, left, left_labels):
 	#plt.show()
 	plt.savefig(filename)
 
-def _enhance(sequences):
+def plot_samplesize(filename, x, x_label, left, left_labels):
+	"Creates a plot with on y-scale and saves it."
+	import matplotlib.pyplot as plt
+
+	fig = plt.figure()
+
+	ax = fig.add_subplot(111)
+	ax.axvline(250000, linewidth=STD_SETTINGS_LINE_WIDTH, color=STD_SETTINGS_LINE_COLOUR) # default value
+
+	for idx in range(len(left)):
+		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
+		_x = sorted(x) # sort x-data
+		ax.plot(_x, _y, MARKER_W_LINE[idx], label=left_labels[idx])
+		
+	ax.legend(loc=0)
+	ax.grid()	
+	ax.set_xlabel(x_label)
+	ax.set_xscale('log')
+	plt.ylim(0.55, 0.85)
+	
+	#plt.show()
+	plt.savefig(filename)
+
+def _enhance_sequences(sequences):
 	order = ['FL', 'DW', 'AD', 'T1', 'T2']
 	ret = []
 	for o in order:
@@ -162,7 +199,7 @@ def plot_sequence_combinations(filename, x, x_label, left, left_labels):
 	combinations = []
 	for l in range(1, len(sequences) + 1):
 		combinations.extend(itertools.combinations(sequences, l))
-	combinations = map(_enhance, combinations)
+	combinations = map(_enhance_sequences, combinations)
 
 	# prepare figure
 	fig = plt.figure()
@@ -170,27 +207,29 @@ def plot_sequence_combinations(filename, x, x_label, left, left_labels):
 
 	# prepare and draw background rectangles
 	## Rectangle( (x,y)-corner, width, height, color=name|hexcode, alpha=float)
-	rect1 = matplotlib.patches.Rectangle((-0.5, 0),  5, 1, color='#00FFFF', alpha=0.5)
-	rect2 = matplotlib.patches.Rectangle(( 4.5, 0), 10, 1, color='#FFFF00', alpha=0.5)
-	rect3 = matplotlib.patches.Rectangle((14.5, 0), 10, 1, color='#00FFFF', alpha=0.5)
-	rect4 = matplotlib.patches.Rectangle((24.5, 0), 5, 1, color='#FFFF00', alpha=0.5)
-	rect5 = matplotlib.patches.Rectangle((29.5, 0), 1, 1, color='#00FFFF', alpha=0.5)
-	rect_flair = matplotlib.patches.Rectangle((-0.5, 0.6), len(left[0]), 0.1, color='#FF0000', alpha=0.3)
+	rect1 = matplotlib.patches.Rectangle((-0.5, 0),  5, 1, color='#CCFEFE', alpha=0.5)
+	rect2 = matplotlib.patches.Rectangle(( 4.5, 0), 10, 1, color='#65FFFF', alpha=0.5)
+	rect3 = matplotlib.patches.Rectangle((14.5, 0), 10, 1, color='#CCFEFE', alpha=0.5)
+	rect4 = matplotlib.patches.Rectangle((24.5, 0), 5, 1, color='#65FFFF', alpha=0.5)
+	rect5 = matplotlib.patches.Rectangle((29.5, 0), 1, 1, color='#CCFEFE', alpha=0.5)
+	rect_flair = matplotlib.patches.Rectangle((-0.5, 0.6), len(left[0]), 0.1, color='#000000', alpha=0.1)
 	ax.add_patch(rect1)
 	ax.add_patch(rect2)
 	ax.add_patch(rect3)
 	ax.add_patch(rect4)
 	ax.add_patch(rect5)
 	ax.add_patch(rect_flair)
-	ax.axhline(0.631, linewidth=2, color='y') # default value
+	ax.axhline(0.631, linewidth=1, color='#000000', linestyle='--') # default value
 	
 	# make main figure
 	for idx in range(len(left)):
 		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
 		_x = sorted(x) # sort x-data
-		plt.plot(_x, _y, 'o', label=left_labels[idx], markersize=10.)
+		plt.plot(_x, _y, marker='o', markersize=10, color='#7F00FF', linestyle=' ')
+		#plt.scatter(_x, _y, s=10., b='#FF0000', marker='o', label=left_labels[idx])
 		
-	ax.legend(loc=0)
+	#ax.legend(loc=0)
+	ax.set_ylabel(left_labels[idx])
 	ax.grid()
 	plt.xticks(range(len(combinations)), ['\n'.join(x) for x in combinations], fontsize='x-small', family='monospace')
 	#plt.xlabel(['\n'.join(x) for x in combinations], )
@@ -210,22 +249,87 @@ def plot_sequence_combinations(filename, x, x_label, left, left_labels):
 	#plt.show()
 	plt.savefig(filename)
 
+def _enhance_features(features):
+	order = ['IN', 'LG', 'LH', 'CD']
+	ret = []
+	for o in order:
+		if o in features:
+			ret.append(o)
+		else:
+			ret.append('| ')
+	return ret
+
+
+def plot_feature_combinations(filename, x, x_label, left, left_labels):
+	import matplotlib.pyplot as plt
+	import matplotlib
+
+	# prepare x-axes labels
+	features = ['IN', 'LG', 'LH', 'CD']
+	#sequences = ['F', 'D', 'A', 'T', 'T']
+	combinations = []
+	for l in range(1, len(features) + 1):
+		combinations.extend(itertools.combinations(features, l))
+	combinations = map(_enhance_features, combinations)
+
+	# prepare figure
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+
+	# prepare and draw background rectangles
+	## Rectangle( (x,y)-corner, width, height, color=name|hexcode, alpha=float)
+	rect1 = matplotlib.patches.Rectangle((-0.5, 0), 4, 1, color='#CCFEFE', alpha=0.5)
+	rect2 = matplotlib.patches.Rectangle(( 3.5, 0), 6, 1, color='#65FFFF', alpha=0.5)
+	rect3 = matplotlib.patches.Rectangle(( 9.5, 0), 4, 1, color='#CCFEFE', alpha=0.5)
+	rect4 = matplotlib.patches.Rectangle((13.5, 0), 1, 1, color='#65FFFF', alpha=0.5)
+	ax.add_patch(rect1)
+	ax.add_patch(rect2)
+	ax.add_patch(rect3)
+	ax.add_patch(rect4)
+	ax.axhline(0.650, linewidth=1, color='#000000', linestyle='--') # default value
+	
+	# make main figure
+	for idx in range(len(left)):
+		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
+		_x = sorted(x) # sort x-data
+		plt.plot(_x, _y, 'o', markersize=10, color='#7F00FF', linestyle=' ')
+
+	ax.set_ylabel(left_labels[idx])
+	ax.grid()
+	plt.xticks(range(len(combinations)), ['\n'.join(x) for x in combinations], fontsize='x-small', family='monospace')
+	plt.xlim(-0.5, len(_x) - 0.5)
+	#plt.ylim(0.1, 0.75)
+
+	# make upper x-axes
+	ax2 = ax.twiny()
+	ax2.set_xlim(-0.5, len(_x) - 0.5)
+	ax2.tick_params(length=0, width=0, labelsize=15)  # labelsize, labelcolor='#0000FF'
+	ax2.set_xticks([1.5, 6.5, 11.5, 14])
+	ax2.set_xticklabels([1, 2, 3, 4])
+	ax2.set_xlabel('#features')
+
+	# show/plot figure
+	plt.subplots_adjust(left=0.08, right=0.92, top=0.9, bottom=0.17)
+	#plt.show()
+	plt.savefig(filename)
+
 def plot_minsamples(filename, x, x_label, left, right, left_labels, right_labels):
 	"Creates a plot with two y-scales and saves it."
 	import matplotlib.pyplot as plt
 
 	fig = plt.figure()
-
 	ax = fig.add_subplot(111)
+	ax.axvline(2, linewidth=STD_SETTINGS_LINE_WIDTH, color=STD_SETTINGS_LINE_COLOUR) # default value
+
 	for idx in range(len(left)):
 		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
 		_x = sorted(x) # sort x-data
-		ax.plot(_x, _y, ':o', label=left_labels[idx])
+		ax.plot(_x, _y, MARKER_W_LINE[idx], label=left_labels[idx])
 		
 	ax.legend(loc=0)
 	ax.grid()	
 	ax.set_xlabel(x_label)
-	ax.axvline(2, linewidth=2, color='y') # default value
+	plt.ylim(0.45, 0.9)
 	
 	#plt.show()
 	plt.savefig(filename, bbox_inches='tight')
@@ -235,17 +339,18 @@ def plot_maxfeatures(filename, x, x_label, left, right, left_labels, right_label
 	import matplotlib.pyplot as plt
 
 	fig = plt.figure()
-
 	ax = fig.add_subplot(111)
+	ax.axvline(6, linewidth=STD_SETTINGS_LINE_WIDTH, color=STD_SETTINGS_LINE_COLOUR) # default value
+
 	for idx in range(len(left)):
 		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
 		_x = sorted(x) # sort x-data
-		ax.plot(_x, _y, ':o', label=left_labels[idx])
+		ax.plot(_x, _y, MARKER_W_LINE[idx], label=left_labels[idx])
 		
 	ax.legend(loc=0)
 	ax.grid()	
 	ax.set_xlabel(x_label)
-	ax.axvline(6, linewidth=2, color='y') # default value
+	plt.ylim(0.45, 0.9)
 	
 	#plt.show()
 	plt.savefig(filename)
@@ -256,16 +361,17 @@ def plot_trees(filename, x, x_label, left, right, left_labels, right_labels):
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
+	ax.axvline(200, linewidth=STD_SETTINGS_LINE_WIDTH, color=STD_SETTINGS_LINE_COLOUR) # default value
 
 	for idx in range(len(left)):
 		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
 		_x = sorted(x) # sort x-data
-		ax.plot(_x, _y, ':o', label=left_labels[idx])
+		ax.plot(_x, _y, MARKER_W_LINE[idx], label=left_labels[idx])
 		
 	ax.legend(loc=0)
 	ax.grid()	
 	ax.set_xlabel(x_label)
-	ax.axvline(200, linewidth=2, color='y') # default value
+	plt.ylim(0.5, 0.9)
 	
 	#plt.show()
 	plt.savefig(filename)
@@ -276,16 +382,18 @@ def plot_depth(filename, x, x_label, left, right, left_labels, right_labels):
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
+	ax.axvline(100, linewidth=STD_SETTINGS_LINE_WIDTH, color=STD_SETTINGS_LINE_COLOUR) # default value
 
 	for idx in range(len(left)):
 		_y = [u for (v,u) in sorted(zip(x,left[idx]))] # sort y-data according to x
 		_x = sorted(x) # sort x-data
-		ax.plot(_x, _y, ':o', label=left_labels[idx])
+		ax.plot(_x, _y, MARKER_W_LINE[idx], label=left_labels[idx])
 		
 	ax.legend(loc=0)
 	ax.grid()	
 	ax.set_xlabel(x_label)
-	ax.axvline(100, linewidth=2, color='y') # max encountered value	
+	plt.xlim(0, 102)
+	plt.ylim(0.0, 0.9)
 	
 	#plt.show()
 	plt.savefig(filename)
