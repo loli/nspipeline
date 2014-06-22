@@ -93,7 +93,7 @@ for idx, metric in enumerate(h1[1:]):
 	r1v = [x[idx] for x in r1.itervalues()]
 	r2v = [x[idx] for x in r2.itervalues()]
 	t, p = ttest_rel(r1v, r2v)
-	print '{}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{}'.format(metric, numpy.mean(r1v), numpy.mean(r2v), numpy.mean(r1v)-numpy.mean(r2v), t, p, p<pborder)
+	print '{}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{}'.format(metric, numpy.mean(r1v), numpy.mean(r2v), numpy.mean(r1v)-numpy.mean(r2v), float(t), p, p<pborder)
 	
 
 

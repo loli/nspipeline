@@ -190,7 +190,7 @@ def print_boxplot(header, result, prefix):
 		plt.tick_params(axis='y', which='major', labelsize=25)
 
 		#plt.show()
-		plt.savefig("tmp/{}_boxplot_{}.pdf".format(prefix, h))
+		plt.savefig("tmp/std_{}_boxplot_{}.pdf".format(prefix, h))
 		#plt.clf()
 
 def print_latex(header, result, summary):
