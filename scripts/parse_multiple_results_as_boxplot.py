@@ -14,10 +14,11 @@ import logging
 
 # own modules
 from medpy.core import Logger
+from colourconfig import *
 
 # constants
-NAMES = ['default', 'tuned'] # names for the evaluation files
-EXLUDED_FILES = []
+NAMES = [''] #['default', 'tuned'] # names for the evaluation files
+EXLUDED_FILES = ['37', '44']
 
 # information
 __author__ = "Oskar Maier"
@@ -80,50 +81,33 @@ def __figure_set_colors(fig):
     ax = fig.add_subplot(1, 1, 1)
     for child in ax.get_children():
         if isinstance(child, matplotlib.spines.Spine):
-            child.set_color('#004b5a')
+            child.set_color(c_plotlines)
 
-    ax.tick_params(axis='x', colors='#004b5a')
-    ax.tick_params(axis='y', colors='#004b5a')
+    ax.tick_params(axis='x', colors=c_text)
+    ax.tick_params(axis='y', colors=c_text)
 
 
 def make_boxplot(names, values, trgdir, name):
     "Make and save multi-element boxplot."
     import matplotlib.pyplot as plt
 
-    # create and save plot
+    # create ans stype plot
     fig = plt.figure()
-    __figure_set_colors(fig)
+    ax = set_figure_style(fig)
         
-    # plot boxplot
-    layout = plt.boxplot(values, notch=True, sym='o', patch_artist=True)
-    
-    # enable grid on y axes
-    ax = plt.axes()  
+    # plot boxplot and style
+    layout = plt.boxplot(values, notch=True, sym='o', patch_artist=True, widths=.3)
+    set_boxplot_style(layout)
+
+    # enable grid on y axes and hide behind boxplots
     ax.yaxis.grid(True)
+    ax.set_axisbelow(True)
     
     # set xtick names
     plt.xticks(range(1, len(names)+1), names)
 
-    # change colours of boxplot elements
-    for box in layout['boxes']:
-        box.set_facecolor('#eac43d')
-        box.set_edgecolor('#b08a06')
-    for whisker in layout['whiskers']:
-        whisker.set_color('#788c23')
-    for median in layout['medians']:
-        median.set_color('#B51621')
-    for cap in layout['caps']:
-        cap.set_color('#788c23')
-    for flier in layout['fliers']:
-        flier.set_color('#a0bb2f')
-
-    # increase label size
-    plt.tick_params(axis='y', which='major', labelsize=25)
-    plt.tick_params(axis='x', which='major', labelsize=25)
-
     #plt.show()
-    plt.savefig("{}/boxplot_{}.pdf".format(trgdir, name))
-    #plt.savefig("{}/exp11_tuned_std_{}.pdf".format(trgdir, name))
+    plt.savefig("{}/exp01_reference_seqspace_{}.pdf".format(trgdir, name))
 
 
 class Evaluation:
