@@ -189,9 +189,8 @@ def print_boxplot(header, result, prefix):
 		# increase label size
 		plt.tick_params(axis='y', which='major', labelsize=25)
 
-		#plt.show()
-		plt.savefig("tmp/std_{}_boxplot_{}.pdf".format(prefix, h))
-		#plt.clf()
+		plt.show()
+		#plt.savefig("tmp/std_{}_boxplot_{}.pdf".format(prefix, h))
 
 def print_latex(header, result, summary):
 	"Prints the parsed evaluation results in latex table format."

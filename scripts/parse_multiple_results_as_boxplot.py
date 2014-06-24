@@ -17,7 +17,7 @@ from medpy.core import Logger
 from colourconfig import *
 
 # constants
-NAMES = [''] #['default', 'tuned'] # names for the evaluation files
+NAMES = ['default', 'tuned'] # names for the evaluation files
 EXLUDED_FILES = ['37', '44']
 
 # information
@@ -73,30 +73,17 @@ def main():
     make_boxplot(NAMES, precisions, args.output, 'precision')
     make_boxplot(NAMES, recalls, args.output, 'recall')
         
-    
-
-def __figure_set_colors(fig):
-    import matplotlib
-
-    ax = fig.add_subplot(1, 1, 1)
-    for child in ax.get_children():
-        if isinstance(child, matplotlib.spines.Spine):
-            child.set_color(c_plotlines)
-
-    ax.tick_params(axis='x', colors=c_text)
-    ax.tick_params(axis='y', colors=c_text)
-
 
 def make_boxplot(names, values, trgdir, name):
     "Make and save multi-element boxplot."
     import matplotlib.pyplot as plt
 
     # create ans stype plot
-    fig = plt.figure()
+    fig = plt.figure(figsize=(5, 5)) # 5, 10
     ax = set_figure_style(fig)
         
     # plot boxplot and style
-    layout = plt.boxplot(values, notch=True, sym='o', patch_artist=True, widths=.3)
+    layout = plt.boxplot(values, notch=True, sym='o', patch_artist=True, widths=.4) # .5
     set_boxplot_style(layout)
 
     # enable grid on y axes and hide behind boxplots
@@ -107,7 +94,9 @@ def make_boxplot(names, values, trgdir, name):
     plt.xticks(range(1, len(names)+1), names)
 
     #plt.show()
-    plt.savefig("{}/exp01_reference_seqspace_{}.pdf".format(trgdir, name))
+    #plt.savefig("{}/exp01_reference_seqspace_{}.pdf".format(trgdir, name))
+    plt.savefig("{}/exp11_tuned_std_{}.pdf".format(trgdir, name))
+    
 
 
 class Evaluation:
