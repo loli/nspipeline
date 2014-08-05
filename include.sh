@@ -24,18 +24,18 @@ source $(dirname $0)/config.sh
 
 # folders
 originals="00original/"
-sequencespace="01flairspace/"
-sequenceskullstripped="02flairskullstripped/"
+sequencespace="00original/"
+sequenceskullstripped="02skullstripped/"
 sequencebiasfieldcorrected="03biasfieldcorrected/"
-sequenceintensitrangestandardization="04flairintensitrangestandardization/"
-sequencefeatures="05flairfeatures/"
+sequenceintensitrangestandardization="04intensitrangestandardization/"
+sequencefeatures="05features/"
 sequencesamplesets="06samplesets/"
 sequenceforests="07forests/"
-sequencelesionsegmentation="08flairlesionsegmentation/"
+sequencelesionsegmentation="08lesionsegmentation/"
 
 segmentations="100gtsegmentations/"
-sequencesegmentations="101flairsegmentations/"
-sequencebrainmasks="102flairbrainmasks/"
+sequencesegmentations="100gtsegmentations/"
+sequencebrainmasks="102brainmasks/"
 
 scripts="scripts/"
 configs="configs/"
