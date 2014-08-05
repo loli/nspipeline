@@ -35,6 +35,7 @@ sequencelesionsegmentation="08flairlesionsegmentation/"
 
 segmentations="100gtsegmentations/"
 sequencesegmentations="101flairsegmentations/"
+sequencesegmentations="/data_humbug1/maier/Temp_Pipeline/ComparisonArticlePipeline/101sequencesegmentations/GTL/"
 sequencebrainmasks="102flairbrainmasks/"
 
 scripts="scripts/"
@@ -214,7 +215,7 @@ function lncond {
 		fi
 
 		# create sym link if source file exists
-		if [ -f ${source} ]
+		if [ -e ${source} ]
 		then
 			log 1 "Linking ${source} to ${target}." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 			ln -s ${source} ${target}
