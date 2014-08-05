@@ -28,7 +28,7 @@ min_no_of_samples_per_class_and_case = 4
 # debug settings
 verboose = False
 debug = False
-override = False # activate override (will signal a warning)
+override = True # activate override (will signal a warning)
 
 def main():
 	# catch arguments
