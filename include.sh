@@ -214,7 +214,7 @@ function lncond {
 		fi
 
 		# create sym link if source file exists
-		if [ -f ${source} ]
+		if [ -e ${source} ]
 		then
 			log 1 "Linking ${source} to ${target}." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 			ln -s ${source} ${target}
