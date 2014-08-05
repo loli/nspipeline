@@ -1,0 +1,30 @@
+# sequences
+FLAIR + T1 + DW
+FLAIR + T1
+FLAIR
+
+# pre-processing
+spacing=3^3
+samples=500.000
+features=all (see NeuroImage)
+
+# forests
+gini
+T=200
+K=None (all at each node)
+depth=100 (unrestricted)
+prob_threshold=0.5
+
+# post-processing
+size_threshold=1500 (1.5ml)
+
+# pipeline
+1. sequencespace: re-sample FLAIR, register others to it
+2. skullstripping: where available, use T1; otherwise FLAIR
+3. biasfieldcorrection: individual
+4. intensityrangestd: use all sequences of one type for model and apply this model to all of this sequence type
+5. features: all from all, only centerdistance from FLAIR only
+6. samplesets:
+    a) GT1
+    b) GT2
+    c) GT1 + GT2 concatenated

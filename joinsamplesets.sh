@@ -18,6 +18,7 @@ to="06samplesets/GTGL"
 log 2 "Joining sample sets" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${images[@]}"; do
     echo $i
+    mkdircond ${to}/${i}
     scripts/joinsamplesets.py ${from1}/${i} ${from2}/${i} ${to}/${i}
 done
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"

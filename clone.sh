@@ -12,6 +12,8 @@
 #
 #	export PYTHONPATH=${PYTHONPATH}:/home/maier/Libraries/Python:/home/maier/Workspacepython/medpy
 #	export PATH=$PATH:/home/maier/Workspacepython/medpy/bin
+#
+#	export PYTHONPATH=${PYTHONPATH}:/share/data_humbug2/maier/Temp_Applications/lib/python2.7/site-packages/
 ######
 
 base="/share/data_humbug1/maier/Temp_Pipeline/NeuroImagePipeline/"

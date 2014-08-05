@@ -22,20 +22,23 @@
 # include the shared config file
 source $(dirname $0)/config.sh
 
+# groundtruth
+gtset="GTG"
+
 # folders
 originals="00original/"
-sequencespace="01flairspace/"
-sequenceskullstripped="02flairskullstripped/"
+sequencespace="01sequencespace/"
+sequenceskullstripped="02skullstripped/"
 sequencebiasfieldcorrected="03biasfieldcorrected/"
-sequenceintensitrangestandardization="04flairintensitrangestandardization/"
-sequencefeatures="05flairfeatures/"
-sequencesamplesets="06samplesets/"
-sequenceforests="07forests/"
-sequencelesionsegmentation="08flairlesionsegmentation/"
+sequenceintensitrangestandardization="04intensitrangestandardization/"
+sequencefeatures="05features/${gtset}/"
+sequencesamplesets="06samplesets/${gtset}/"
+sequenceforests="07forests/${gtset}/"
+sequencelesionsegmentation="08lesionsegmentation/${gtset}/"
 
-segmentations="100gtsegmentations/"
-sequencesegmentations="101flairsegmentations/"
-sequencebrainmasks="102flairbrainmasks/"
+segmentations="100gtsegmentations/${gtset}/"
+sequencesegmentations="101sequencesegmentations/${gtset}/"
+sequencebrainmasks="102sequencebrainmasks/"
 
 scripts="scripts/"
 configs="configs/"
@@ -214,7 +217,7 @@ function lncond {
 		fi
 
 		# create sym link if source file exists
-		if [ -f ${source} ]
+		if [ -e ${source} ]
 		then
 			log 1 "Linking ${source} to ${target}." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 			ln -s ${source} ${target}
