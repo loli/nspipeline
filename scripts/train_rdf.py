@@ -34,7 +34,7 @@ def main():
             training_class_vector = numpy.load(f)
 	
         # prepare and train the decision forest
-        forest = ExtraTreesClassifier(n_estimators=200,
+        forest = RandomForestClassifier(n_estimators=200,
                             criterion = 'entropy',
                             max_features = 'auto', # rdf: auto / et: None
 			    #splitter="alternatingnode",

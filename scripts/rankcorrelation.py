@@ -92,7 +92,9 @@ def main():
 		for eidx in range(len(headers)):
 			emsr_name = headers[eidx]
 			emsr_data = __get_score_ordered(scores, eidx)
-			#print emsr_name
+			if 'P2C' in emsr_name:
+			    emsr_name = 'ASSD(mm)'
+			print emsr_name
 			#print emsr_data
 
 			# compute respective correlation and print

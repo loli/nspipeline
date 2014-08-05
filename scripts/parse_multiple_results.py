@@ -89,15 +89,15 @@ def main():
         raise Exception("Could not parse all files. Breaking.")
 
     # PLOT
-    #plot_sequence_combinations(args.output, parameters, 'sequence combinations', (dms, ), (r'$DC/F_1$', ))
-    #plot_feature_combinations(args.output, parameters, 'feature combinations', (dms, ), (r'$DC/F_1$', ))
+    #plot_sequence_combinations(args.output, parameters, 'sequence combinations', (dms, ), (r'$DC$', ))
+    #plot_feature_combinations(args.output, parameters, 'feature combinations', (dms, ), (r'$DC$', ))
     
     #plot_maxfeatures(parameters, '#features', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
     #plot_minsamples(parameters, '#samples', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
     #plot_depth(parameters, '#tree-depth', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
     #plot_trees(parameters, '#trees', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
     
-    plot_samplesize(parameters, '#training-samples', (dms, precisions, recalls), ('DC/F1', 'Prec.', 'Rec.'))
+    plot_samplesize(parameters, '#training-samples', (dms, precisions, recalls), ('DC', 'Prec.', 'Rec.'))
     
     #plt.show()
     plt.savefig(args.output)
