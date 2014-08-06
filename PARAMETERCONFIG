@@ -1,0 +1,26 @@
+# sequences
+all available
+
+# pre-processing
+spacing=native (FLAIR, PD, T1mprageCE, T1mprage, T2.nii.gz) [1x1x1 might also work?]
+samples=500.000
+features=all
+
+# forests
+gini
+T=200
+K=None (all at each node)
+depth=100 (unrestricted)
+prob_threshold=0.5 [TEST THIS! 0.1 MIGHT BE MORE SENSIBLE]
+
+# post-processing
+size_threshold=0 (0ml)
+
+# pipeline
+1. sequencespace: not applied (original space)
+2. skullstripping: use T1mprage
+3. biasfieldcorrection: individual per image
+4. intensityrangestd: not applied (too many outliers)
+5. features: all from all; centerdistance only from T2
+6. samplesets:
+
