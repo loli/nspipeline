@@ -35,8 +35,8 @@ def main():
 	
         # prepare and train the decision forest
         forest = ExtraTreesClassifier(n_estimators=200,
-                            criterion = 'entropy',
-                            max_features = 'auto', # rdf: auto / et: None
+                            criterion = 'gini',
+                            max_features = None, # rdf: auto / et: None
 			    #splitter="alternatingnode",
                             min_samples_split = 2,
                             min_samples_leaf = 1,

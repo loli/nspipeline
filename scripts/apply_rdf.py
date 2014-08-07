@@ -27,50 +27,51 @@ n_jobs = 6
 probability_threshold = 0.5
 
 def main():
-	# catch parameters
-	forest_file = sys.argv[1]
-	case_folder = sys.argv[2]
-	mask_file = sys.argv[3]
-	feature_cnf_file = sys.argv[4]
-	segmentation_file = sys.argv[5]
-	probability_file = sys.argv[6]
+    # catch parameters
+    forest_file = sys.argv[1]
+    case_folder = sys.argv[2]
+    mask_file = sys.argv[3]
+    feature_cnf_file = sys.argv[4]
+    segmentation_file = sys.argv[5]
+    probability_file = sys.argv[6]
 
-	# load features to use and create proper names from them
-	features_to_use = load_feature_names(feature_cnf_file)
+    # load features to use and create proper names from them
+    features_to_use = load_feature_names(feature_cnf_file)
 
-        # loading case features
-	feature_vector = []
+    # loading case features
+    feature_vector = []
 
-	for feature_name in features_to_use:
-		_file = os.path.join(case_folder, '{}.npy'.format(feature_name))
-		if not os.path.isfile(_file):
-			raise Exception('The feature "{}" could not be found in folder "{}". Breaking.'.format(feature_name, case_folder))
-		with open(_file, 'r') as f:
-			feature_vector.append(numpy.load(f))
-	feature_vector = join(*feature_vector)
-	if 1 == feature_vector.ndim:
-		feature_vector = numpy.expand_dims(feature_vector, -1)
+    for feature_name in features_to_use:
+	    _file = os.path.join(case_folder, '{}.npy'.format(feature_name))
+	    if not os.path.isfile(_file):
+		    raise Exception('The feature "{}" could not be found in folder "{}". Breaking.'.format(feature_name, case_folder))
+	    with open(_file, 'r') as f:
+		    feature_vector.append(numpy.load(f))
+    feature_vector = join(*feature_vector)
+    if 1 == feature_vector.ndim:
+	    feature_vector = numpy.expand_dims(feature_vector, -1)
 
-	# load and apply the decision forest
-	with open(forest_file, 'r') as f:
-		forest = pickle.load(f)
-	probability_results = forest.predict_proba(feature_vector)[:,1]
-	classification_results = probability_results > probability_threshold # equivalent to forest.predict
+    # load and apply the decision forest
+    with open(forest_file, 'r') as f:
+        forest = pickle.load(f)
+    probability_results = forest.predict_proba(feature_vector)[:,1]
+    classification_results = probability_results > probability_threshold # equivalent to forest.predict
 
-	# preparing  image
-	m, h = load(mask_file)
-    	m = m.astype(numpy.bool)
-    	oc = numpy.zeros(m.shape, numpy.uint8)
-	op = numpy.zeros(m.shape, numpy.float32)
-    	oc[m] = numpy.squeeze(classification_results).ravel()
-	op[m] = numpy.squeeze(probability_results).ravel()
 
-	# applying the post-processing morphology
-	oc = binary_fill_holes(oc)
+    # preparing  image
+    m, h = load(mask_file)
+    m = m.astype(numpy.bool)
+    oc = numpy.zeros(m.shape, numpy.uint8)
+    op = numpy.zeros(m.shape, numpy.float32)
+    oc[m] = numpy.squeeze(classification_results).ravel()
+    op[m] = numpy.squeeze(probability_results).ravel()
 
-	# saving the results
-    	save(oc, segmentation_file, h, True)
-    	save(op, probability_file, h, True)
+    # applying the post-processing morphology
+    oc = binary_fill_holes(oc)
+
+    # saving the results
+    save(oc, segmentation_file, h, True)
+    save(op, probability_file, h, True)
 
 def feature_struct_entry_to_name(fstruct):
 	seq, fcall, fargs, _ = fstruct
