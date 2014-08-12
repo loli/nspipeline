@@ -5,6 +5,7 @@
 #####
 
 ## Changelog
+# 2014-08-12 Changed to use sequencespacebasesequence rather than basesequence
 # 2014-03-24 Changed to a more flexible version
 # 2013-11-13 Added step to correct the qform and sform codes
 # 2013-11-04 Added re-sampling of T2 image to isotropic spacing before registration and updated loop design.
@@ -22,8 +23,8 @@ function resample ()
 {
 	idx=$1
 
-	srcfile="${originals}/${idx}/${basesequence}.${imgfiletype}"
-	trgfile="${sequencespace}/${idx}/${basesequence}.${imgfiletype}"
+	srcfile="${originals}/${idx}/${sequencespacebasesequence}.${imgfiletype}"
+	trgfile="${sequencespace}/${idx}/${sequencespacebasesequence}.${imgfiletype}"
 
 	mkdircond ${sequencespace}/${idx}
 
@@ -49,7 +50,7 @@ function register ()
 	sequence=$2
 
 	trgdir="${sequencespace}/${idx}/"
-	fixed="${trgdir}/${basesequence}.${imgfiletype}"
+	fixed="${trgdir}/${sequencespacebasesequence}.${imgfiletype}"
 	moving="${originals}/${idx}/${sequence}.${imgfiletype}"
 
 	tmpdir=`mktemp -d`
@@ -95,48 +96,51 @@ function transform ()
 
 # main code
 if (( $isotropic == 1 )) ; then
-	log 2 "Resampling all ${basesequence} sequences to isotropic spacing of ${isotropicspacing}mm" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	parallelize resample ${threadcount} images[@]
+	log 2 "Resampling all ${sequencespacebasesequence} sequences to isotropic spacing of ${isotropicspacing}mm" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	parallelize resample ${threadcount} allimages[@]
 else
-	log 2 "Resampling disabled. Linking base sequences ${basesequence} to target folder." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	for i in "${images[@]}"; do
+	log 2 "Resampling disabled. Linking base sequences ${sequencespacebasesequence} to target folder." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	for i in "${allimages[@]}"; do
 		mkdircond ${sequencespace}/${i}
-		lncond "${PWD}/${originals}/${i}/${basesequence}.${imgfiletype}" "${sequencespace}/${i}/${basesequence}.${imgfiletype}"
+		lncond "${PWD}/${originals}/${i}/${sequencespacebasesequence}.${imgfiletype}" "${sequencespace}/${i}/${sequencespacebasesequence}.${imgfiletype}"
 	done
 fi
 
-log 2 "Registering all remaining sequences to the base sequence ${basesequence}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for i in "${images[@]}"; do
-	for s in "${sequences[@]}"; do
-		srcfile="${originals}/${i}/${s}.${imgfiletype}"
-		trgfile="${sequencespace}/${i}/${s}.${imgfiletype}"
+log 2 "Registering all remaining sequences to the base sequence ${sequencespacebasesequence}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+for i in "${allimages[@]}"; do
+    for sequences in "${sc_sequences[@]}"; do
+        sequences=( ${sequences} )
+	    for s in "${sequences[@]}"; do
+		    srcfile="${originals}/${i}/${s}.${imgfiletype}"
+		    trgfile="${sequencespace}/${i}/${s}.${imgfiletype}"
 
-		# catch base sequence and continue, since it is the fixed image and does not need registration
-		if [ "${s}" == "${basesequence}" ]; then
-			continue
-		fi
-		# catch ADC and continue, since these are transformed with the DW transformation matrices
-		if [ "${s}" == "adc_tra" ]; then
-			continue
-		fi
-		# continue if target file already exists
-		if [ -f "${trgfile}" ]; then
-			continue
-		fi
-		# warn if source file does not exist
-		if [ ! -f "${srcfile}" ]; then
-			log 3 "The source file ${srcfile} does not exist. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-			continue
-		fi
+		    # catch base sequence and continue, since it is the fixed image and does not need registration
+		    if [ "${s}" == "${sequencespacebasesequence}" ]; then
+			    continue
+		    fi
+		    # catch ADC and continue, since these are transformed with the DW transformation matrices
+		    if [ "${s}" == "adc_tra" ]; then
+			    continue
+		    fi
+		    # continue if target file already exists
+		    if [ -f "${trgfile}" ]; then
+			    continue
+		    fi
+		    # warn if source file does not exist
+		    if [ ! -f "${srcfile}" ]; then
+			    log 3 "The source file ${srcfile} does not exist. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+			    continue
+		    fi
 
-		# perform rigid registration
-		register "${i}" "${s}"
-	done
+		    # perform rigid registration
+		    register "${i}" "${s}"
+	    done
+    done
 done
 
 if isIn "adc_tra" "${sequences[@]}"; then
 	log 2 "Registering resp. transforming ADC images" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-	for i in "${images[@]}"; do
+	for i in "${allimages[@]}"; do
 		srcfile="${originals}/${i}/adc_tra.${imgfiletype}"
 		trgfile="${sequencespace}/${i}/adc_tra.${imgfiletype}"
 		matrix="${sequencespace}/${i}/dw_tra_b1000_dmean.txt"
@@ -161,7 +165,7 @@ if isIn "adc_tra" "${sequences[@]}"; then
 fi
 
 log 2 "Correcting metadata" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for i in "${images[@]}"; do
+for i in "${allimages[@]}"; do
 	for s in "${sequences[@]}"; do
 		if [ -f "${sequencespace}/${i}/${s}.${imgfiletype}" ]; then
 			runcond "${scripts}/niftimodifymetadata.py ${sequencespace}/${i}/${s}.${imgfiletype} qf=qf sf=qf qfc=1 sfc=1"

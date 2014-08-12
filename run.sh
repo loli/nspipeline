@@ -10,6 +10,8 @@
 ### SETTINGS ###
 START="original"
 LOGGING=true
+#!TODO: Add usage of different sample sets
+#!TODO: Add array of machines
 
 ### INCLUDES ###
 source $(dirname $0)/include.sh
@@ -27,6 +29,7 @@ function runcondlog () {
     else
         runcond "${cmd}"
     fi
+}
 
 function originals () {
     log 2 "### ORIGINALS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
@@ -34,7 +37,6 @@ function originals () {
     log 2 "### ORIGINALS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 }
 
-# !TODO: requires sequencespacebasesequence [define and use!]
 function sequencespace () {
     log 2 "### SEQUENCESPACE: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
     runcondlog "pop_sequencespace.sh" "sequencespace"
@@ -42,20 +44,67 @@ function sequencespace () {
 }
 
 function sequenceskullstripped () {
-
+    log 2 "### SEQUENCESKULLSTRIP: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequenceskullstripped.sh" "sequenceskullstrip"
+    log 2 "### SEQUENCESKULLSTRIP: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 }
-sequencebiasfieldcorrected="03biasfieldcorrected/"
-sequenceintensitrangestandardization="04intensitrangestandardization/"
-sequencefeatures="05features/"
-sequencesamplesets="06samplesets/${gtset}/"
-sequenceforests="07forests/${gtset}/"
-sequencelesionsegmentation="08lesionsegmentation/${gtset}/"
 
-segmentations="100gtsegmentations/${gtset}/"
-sequencesegmentations="101sequencesegmentations/${gtset}/"
-sequencebrainmasks="102sequencebrainmasks/"
+function sequencebiasfieldcorrected () {
+    log 2 "### SEQUENCEBIASFIELD: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequencebiasfieldcorrected.sh" "sequencebiasfield"
+    log 2 "### SEQUENCEBIASFIELD: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
 
+#!TODO: Check that this works
+function sequenceintensitrangestandardization () {
+    log 2 "### SEQUENCEINTENSITYRANGESTD: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequenceintensitrangestandardization.sh" "sequenceintensityrangestd"
+    log 2 "### SEQUENCEINTENSITYRANGESTD: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
 
+#!TODO: Check that this works
+function sequencefeatures () {
+    log 2 "### SEQUENCEFEATURES: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequencefeatures.sh" "sequencefeatures"
+    log 2 "### SEQUENCEFEATURES: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
+
+function sequencesamplesets () {
+    log 2 "### SEQUENCESAMPLESETS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequencesamplesets.sh" "sequencesamplesets"
+    log 2 "### SEQUENCESAMPLESETS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
+
+function sequenceforests () {
+    log 2 "### SEQUENCEFORESTS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequencetrainforests.sh" "sequencetrainforests"
+    log 2 "### SEQUENCEFORESTS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
+
+function sequencelesionsegmentation () {
+    log 2 "### SEQUENCELESIONSEGMENTATION: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequencelesionsegmentation.sh" "sequencelesionsegmentation"
+    log 2 "### SEQUENCELESIONSEGMENTATION: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
+
+function segmentations () {
+    log 2 "### SEGMENTATIONS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_segmentations.sh" "segmentations.sh "
+    log 2 "### SEGMENTATIONS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
+
+function sequencesegmentations () {
+    log 2 "### SEQUENCESEGMENTATIONS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    runcondlog "pop_sequencesegmentations.sh" "sequencesegmentations.sh "
+    log 2 "### SEQUENCESEGMENTATIONS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+}
+
+function createfolderstructure () {
+    for folder in "${folders[@]}"; do
+        mkdircond ${folder}
+    done
+}
 
 ### MAIN ###
+#!TODO: Create directory structure if not existant!
 

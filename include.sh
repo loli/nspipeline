@@ -31,14 +31,18 @@ sequencespace="01sequencespace/"
 sequenceskullstripped="02skullstripped/"
 sequencebiasfieldcorrected="03biasfieldcorrected/"
 sequenceintensitrangestandardization="04intensitrangestandardization/"
-sequencefeatures="05features/${gtset}/"
-sequencesamplesets="06samplesets/${gtset}/"
-sequenceforests="07forests/${gtset}/"
-sequencelesionsegmentation="08lesionsegmentation/${gtset}/"
+sequencefeatures="05features/"
+sequencesamplesets="06samplesets/"
+sequenceforests="07forests/"
+sequencelesionsegmentation="08lesionsegmentation/"
 
-segmentations="100gtsegmentations/${gtset}/"
-sequencesegmentations="101sequencesegmentations/${gtset}/"
+segmentations="100gtsegmentations/"
+sequencesegmentations="101sequencesegmentations/"
 sequencebrainmasks="102sequencebrainmasks/"
+
+folders=("${originals}" "${sequencespace}" "${sequenceskullstripped}" "${sequencebiasfieldcorrected}" "${sequenceintensitrangestandardization}" \
+         "${sequencefeatures}" "${sequencesamplesets}" "${sequenceforests}" "${sequencelesionsegmentation}" "${segmentations}" \
+         "${sequencesegmentations}" "${sequencebrainmasks}" )
 
 scripts="scripts/"
 configs="configs/"

@@ -17,7 +17,7 @@
 source $(dirname $0)/include.sh
 
 # Constants
-sequencestolink=('flair_tra' 'dw_tra_b1000_dmean' 'adc_tra' 't1_tra_ffe' 't1_sag_tfe' 't2_sag_tse' 't2_tra_ffe' 't2_tra_tse') # where available / saggital dims = 0, 0, 0, 0, 2, 2, 0, 0
+sequencestolink=('flair_tra' 'dw_tra_b1000_dmean' 't1_sag_tfe') # where available / saggital dims = 0, 0, 0, 0, 2, 2, 0, 0
 declare -A sequencesflipdims=(  ['flair_tra']="0" ['dw_tra_b1000_dmean']="0" ['adc_tra']="0" ['t1_tra_ffe']="0" \
 				['t1_sag_tfe']="2" ['t2_sag_tse']="2" ['t2_tra_ffe']="0" ['t2_tra_tse']="0" )
 
@@ -26,7 +26,7 @@ declare -A sequencesflipdims=(  ['flair_tra']="0" ['dw_tra_b1000_dmean']="0" ['a
 c01dir="/imagedata/HEOPKS/data/"
 declare -A c01indicesmapping=(  ["01"]="01" ["02"]="02" ["03"]="03" ["04"]="04" ["05"]="05" ["06"]="06" ["07"]="07" ["08"]="08" ["09"]="09" ["10"]="10" \
 				["11"]="11" ["12"]="12" ["13"]="13" ["14"]="14" ["15"]="15" ["16"]="16" ["17"]="17" ["18"]="18" ["19"]="19" ["20"]="20" \
-				["21"]="21" ["22"]="22" ["23"]="23" ["24"]="24" ["25"]="25" ["26"]="26" ["27"]="27" ["28"]="28" ["29"]="29" )
+				["21"]="21" ["23"]="23" ["24"]="24" ["25"]="25" ["26"]="26" ["27"]="27" ["28"]="28" ["29"]="29" )
 
 # Image collection JGABLENTZ details
 c02dir="/imagedata/JGABLENTZ/data/"
@@ -94,20 +94,20 @@ function link_case () {
 
 # main code
 log 2 "Copying / converting images and correcting metadata" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for i in "${images[@]}"; do
+for i in "${allimages[@]}"; do
 	if test "${c01indicesmapping[${i}]+isset}"; then
 		link_case "${c01dir}/${c01indicesmapping[${i}]}" "${i}"
 	elif test "${c02indicesmapping[${i}]+isset}"; then
 		link_case "${c02dir}/${c02indicesmapping[${i}]}" "${i}"
 	else
-		log 3 "No candidate for case id ${i} found in any of the collections. Please check your 'images' array. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+		log 3 "No candidate for case id ${i} found in any of the collections. Please check your 'allimages' array. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	fi
 done
 
 log 2 "Flipping images of every second case in-place along the mid-saggital plane" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for (( i = 1 ; i < ${#images[@]} ; i+=2 )) do
+for (( i = 1 ; i < ${#allimages[@]} ; i+=2 )) do
 	for s in "${sequencestolink[@]}"; do
-		f="${originals}/${images[$i]}/${s}.${imgfiletype}"
+		f="${originals}/${allimages[$i]}/${s}.${imgfiletype}"
 		if [ -e ${f} ]; then
 			lnrealize "${f}"
 			runcond "${scripts}/flip.py ${f} ${sequencesflipdims[${s}]}"
