@@ -53,3 +53,20 @@ maxdepth=100
 # post-processing parameters
 minimallesionsize=1500
 
+##
+# functions
+##
+# build a custom, hidden feature config file for each sequence combinations
+function makecustomfeatureconfigs () {
+    local scid
+    for scid in "${sc_ids[@]}"; do
+        local sequences=( ${sc_sequences[$scid]} )
+        local sequences_sum=$(joinarr "+" ${sequences[@]})
+        local string="features_to_extract = ${sequences_sum}"
+        local sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+        runcond "cp ${featurecnf} ${sc_featurecnf}"
+        #!NOTE: Not very nice, as runcond is omitted. But I didn't find a solution to get the piping working otherwise.
+        echo "${string}" >> "${sc_featurecnf}"
+    done
+}
+
