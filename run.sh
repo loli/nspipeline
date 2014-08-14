@@ -249,18 +249,18 @@ function rundistributed () {
 }
 
 ### MAIN ###
+loglevel=1
 #createfolderstructure
 #originals
 #segmentations
 #sequencespace
 #sequencesegmentations
-#skullstripped
+skullstripped
 #biasfieldcorrected
 #intensitrangestandardization
 #features
 #samplesets
 #forests
-loglevel=1
-lesionsegmentation
-evaluation
+#lesionsegmentation
+#evaluation
 

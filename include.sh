@@ -253,6 +253,25 @@ lnrealize() {
 	fi
 }
 
+###
+# Links all files in folder from that are missing in folder to into folder to
+###
+function linkmissing () {
+    local from=$1
+    local to=$2
+    
+    # make pathes absolute if not yet
+    [ "${from:0:1}" = "/" ] || from="$(pwd)/${from}"
+    [ "${to:0:1}" = "/" ] || to="$(pwd)/${to}"
+
+    # link missing files
+    local f
+    for f in "${from}"/*; do
+        [[ -f "${f}" ]] || continue
+        lncond "${from}/$(basename "$f")" "${to}/$(basename "$f")"
+    done
+}
+
 #####
 ## Checks whether an element exists in an array
 ## Call like: isIn "element" "${array[@]}"

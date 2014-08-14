@@ -6,9 +6,10 @@
 #####
 
 ## Changelog
+# 2014-08-14 Changes such, that all brain mask option folders contain brain masks for all cases using copy from other brain mask settings
 # 2014-08-12 Adapted to work with different skull-stripping base sequences for different target sequences
 # 2013-03-25 Adapted to take any sequence as base sequence.
-# 2013-11-04 Improved the mechanism and seperated the brain mask location from the skull-stripped images.
+# 2013-11-04 Improved the mechanism and separated the brain mask location from the skull-stripped images.
 # 2013-10-16 created
 
 # include shared information
@@ -73,6 +74,14 @@ for scid in "${!sc_train_brainmasks[@]}"; do
 	    done
     done
 done
+
+# fill possible gaps in the brain masks (carefully: which brainmasks configuration is chosen for the filling is random!)
+for brain_basessequence_from in "${sc_train_brainmasks[@]}"; do
+    for brain_basessequence_to in "${sc_train_brainmasks[@]}"; do
+        linkmissing "${sequencebrainmasks}/${brain_basessequence_from}/" "${sequencebrainmasks}/${brain_basessequence_to}/"
+    done
+done
+
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 
 
