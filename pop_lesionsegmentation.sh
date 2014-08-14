@@ -1,10 +1,11 @@
 #!/bin/bash
 
 #####
-# APplyies the forests to a (preliminary) segmentation of the brain lesion in sequence space.
+# Applyies the forests to a (preliminary) segmentation of the brain lesion in sequence space.
 #####
 
 ## Changelog
+# 2014-08-13 Adapted to cope with multiple sequence configurations and ground truth sets
 # 2014-05-08 Adapted to the new, distributed calculation scheme.
 # 2013-04-03 Added a morphological post-processing step (and removed again).
 # 2013-03-25 Updated to new, variable version.
@@ -15,21 +16,35 @@
 # include shared information
 source $(dirname $0)/include.sh
 
+# functions
+function post_processing () {
+    local i=$1
+    runcond "${scripts}/remove_small_objects.py ${sequencelesionsegmentation}/${gtset}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${gtset}/${i}/segmentation_post.nii.gz ${minimallesionsize}"
+}
+
 # main code
 log 2 "Applying random decision forests to segment lesion" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-for i in "${images[@]}"; do
-	mkdircond ${sequencelesionsegmentation}/${i}
-	runcond "${scripts}/apply_rdf.py ${sequenceforests}/${i}.pkl ${sequencefeatures}/${i}/ ${sequencebrainmasks}/${i}.nii.gz ${featurecnf} ${sequencelesionsegmentation}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${i}/probabilities.nii.gz"
+
+makecustomfeatureconfigs
+for gtset in "${gtsets[@]}"; do
+    mkdircond ${sequencelesionsegmentation}/${gtset}
+    
+    for scid in "${!sc_train_brainmasks[@]}"; do
+        basesequence=${sc_train_brainmasks[$scid]}
+        images=( ${sc_apply_images[$scid]} )
+        
+        log 2 "Applying for ground truth set ${gtset} and seq. configuration ${scid}..." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    
+        for i in "${images[@]}"; do
+            sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+	        mkdircond ${sequencelesionsegmentation}/${gtset}/${i}   
+	        runcond "${scripts}/apply_rdf.py ${sequenceforests}/${gtset}/${i}.pkl ${sequencefeatures}/${basesequence}/${i}/ ${sequencebrainmasks}/${basesequence}/${i}.nii.gz ${sc_featurecnf} ${sequencelesionsegmentation}/${gtset}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${gtset}/${i}/probabilities.nii.gz"
+        done
+    done
+    
+    log 2 "Morphological post-processing for ground truth set ${gtset}..." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    parallelize post_processing ${threadcount} allimages[@]
 done
-
-log 2 "Morphological post-processing" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-function post_processing ()
-{
-	i=$1
-	runcond "${scripts}/remove_small_objects.py ${sequencelesionsegmentation}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${i}/segmentation_post.nii.gz ${minimallesionsize}"
-}
-parallelize post_processing ${threadcount} images[@]
-
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 
 

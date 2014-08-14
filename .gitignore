@@ -1,15 +1,21 @@
 # workflow files #
 ##################
+test.py
+tmp.py
+test.sh
+tmp.sh
+test
+tmp
 todo.txt
 *.csv
 
-# Local files to exclude #
-##########################
-01t2space/show.sh
-06stdspace/show.sh
+# Persistent gedit backup files and hidden files #
+##################################################
+*~
+.*
 
-# Pickle Python classes and NumpPy arrays #
-###########################################
+# Pickled Python classes and NumpPy arrays #
+############################################
 *.pkl
 *.npy
 

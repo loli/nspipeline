@@ -37,15 +37,14 @@ def main():
         forest = ExtraTreesClassifier(n_estimators=200,
                             criterion = 'gini',
                             max_features = None, # rdf: auto / et: None
-			    #splitter="alternatingnode",
+			                #splitter="alternatingnode",
                             min_samples_split = 2,
                             min_samples_leaf = 1,
 			                max_depth = max_depth,
                             bootstrap = True,
                             oob_score = False,
                             random_state=None,
-                            n_jobs=n_jobs,
-                            compute_importances=True)
+                            n_jobs=n_jobs)
         forest.fit(training_feature_vector, training_class_vector)
 
 	# saving the decision forest

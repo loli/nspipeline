@@ -25,8 +25,6 @@ gtsets=("GTG" "GTL")
 declare -A gtsources=( ["GTG"]="segmentation_G" ["GTL"]="segmentation_L" )
 
 # sequence combinations settings
-sc_ids=("1" "2" "3")
-allimages=('03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '15' '17' '18' '19' '20' '21' '23' '25' '26' '28' '29' '30' '31' '32' '33' '34' '35' '36' '37' '39' '40' '41' '42' '43' '44' '45')
 declare -A sc_sequences=( ["1"]="flair_tra" ["2"]="flair_tra t1_sag_tfe" ["3"]="flair_tra t1_sag_tfe dw_tra_b1000_dmean" )
 declare -A sc_apply_images=( ["1"]="19 30 31 32 33 34 35 36 37 39 40 41 42 43 44 45" \
                              ["2"]="04 06 08 20 21 28 29" \
@@ -36,6 +34,7 @@ declare -A sc_train_images=( ["1"]="03 04 05 06 07 08 09 10 11 12 13 15 17 18 19
                              ["3"]="03 05 07 09 10 11 12 13 15 17 18 23 25 26" )
 declare -A sc_train_brainmasks=( ["1"]="flair_tra" ["2"]="t1_sag_tfe" ["3"]="t1_sag_tfe" )
 sequencespacebasesequence="flair_tra"
+evaluationbasesequence="t1_sag_tfe"
 
 # sequence space settings
 isotropic=1 # 0/1 to disable/enable pre-registration resampling of base sequence to isotropic spacing
@@ -45,7 +44,7 @@ isotropicspacing=3 # the target isotropic spacing in mm
 featurecnf="featureconfig.py"
 
 # training sample size
-samplesize=250000
+samplesize=500000
 
 # rdf parameters
 maxdepth=100
@@ -56,6 +55,13 @@ minimallesionsize=1500
 ##
 # functions
 ##
+# build a global flat sorted allimages variable
+function makeallimages () {
+    allimages="${sc_apply_images[@]}"
+    local sorted
+    readarray -t sorted < <(for a in ${allimages[@]}; do echo "$a"; done | sort)
+    allimages=( ${sorted[@]} )
+}
 # build a custom, hidden feature config file for each sequence combinations
 function makecustomfeatureconfigs () {
     local scid
@@ -69,4 +75,16 @@ function makecustomfeatureconfigs () {
         echo "${string}" >> "${sc_featurecnf}"
     done
 }
+
+##
+# Config processing
+##
+# creating an allimages variable for easy processing
+makeallimages
+# collect the sequence combination set ids in one variable
+sc_ids=( "${!sc_apply_images[@]}" )
+
+##
+# Space for scripted config changes (created automatically)
+##
 

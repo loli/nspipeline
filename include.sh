@@ -22,8 +22,13 @@
 # include the shared config file
 source $(dirname $0)/config.sh
 
-# groundtruth
-gtset="GTG"
+# conditional loading of host-specific replacement config file
+#!TODO: DANGEROUS! MASKS CONFIG FILE! BETTER PASS THEM BY HAND OR VARIABLE!
+_hn=`hostname`
+if [ -f ".config_${_hn}.sh" ]; then
+    source $(dirname $0)/.config_${_hn}.sh
+fi
+
 
 # folders
 originals="00original/"
@@ -63,11 +68,13 @@ logprintlocation=false # true | false to print the location from where the log w
 ## Signal a log message of a determined level
 ######
 function log {
-	level=${1}
-	msg=${2}
-	location=${3} # optional, should be [$SOURCE:$FUNCNAME:$LINENO], [$SOURCE::$LINENO] or similar
+	local level=${1}
+	local msg=${2}
+	local location=${3} # optional, should be [$SOURCE:$FUNCNAME:$LINENO], [$SOURCE::$LINENO] or similar
 
-	loglevels=${#logprefixes[@]}	
+	local loglevels=${#logprefixes[@]}
+	
+	local prefix
 	
 	# check if current logging level is lower than the messages logging level
 	if [ "$loglevel" -le "$level" ]
@@ -103,11 +110,13 @@ function log {
 function parallelize ()
 {
 	# Grab parameters
-	fun=$1
-	processes=$2
-	declare -a parameters=("${!3}")
+	local fun=$1
+	local processes=$2
+	local -a parameters=("${!3}")
 	
 	# split $parameters into $processes sized chunks
+	local i
+	local paramter
 	for i in $(seq 0 ${processes} ${#parameters[@]}); do # seq: from stepsize to
 		declare -a parameterchunk="(${parameters[@]:$i:$processes})"
 		# execute function in background for each parameter in the current chunk and then wait for their termination
@@ -122,7 +131,7 @@ function parallelize ()
 ## Create the supplied directory if it does not yet exists
 ######
 function mkdircond {
-	directory=${1}
+	local directory=${1}
 
 	if [ ! -d "$directory" ]
 	then
@@ -135,12 +144,12 @@ function mkdircond {
 ## Remove all files (but not directories or write-protected files) from the supplied directory if it is not empty
 ######
 function emptydircond {
-	directory=${1}
+	local directory=${1}
 
 	if [ -z "$directory" ]; then
 		log 3 "Supplied an empty string to emptydircond function. This might be dangerous and is therefore ignored." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	else
-		filecount=`ls -al ${directory} | wc -l`
+		local filecount=`ls -al ${directory} | wc -l`
 		if [ "$filecount" -gt "3" ]
 		then
 			rm ${directory}/*
@@ -152,7 +161,7 @@ function emptydircond {
 ## Remove a dirctory if it exists
 #####
 function rmdircond {
-	directory=${1}
+	local directory=${1}
 
 	if [ -d "$directory" ]
 	then
@@ -164,7 +173,7 @@ function rmdircond {
 ## Empties and removes a directory if it exists
 #####
 function removedircond {
-	directory=${1}
+	local directory=${1}
 	emptydircond ${directory}
 	rmdircond ${directory}
 }
@@ -174,7 +183,7 @@ function removedircond {
 ## As a second parameter a redirect target of the command std output can optionaly be passed.
 #####
 function runcond {
-	cmd=$1
+	local cmd=$1
 	if [[ -z "$dryrun" ]]; then
 		if [ $# -gt 1 ]; then
 			$cmd > $2
@@ -190,8 +199,8 @@ function runcond {
 ## Copy a file if target file does not exist already
 ######
 function cpcond {
-	source=$1
-	target=$2
+	local source=$1
+	local target=$2
 
 	if [ ! -f ${source} ]; then
 		log 3 "Source file ${source} does not exists. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
@@ -207,8 +216,8 @@ function cpcond {
 ## Create a symlink if non existant or dead
 ######
 function lncond {
-	source=$1
-	target=$2
+	local source=$1
+	local target=$2
 
 	# Check if link does not exists or is a dead symlink
 	if [ ! -e ${target} ]
@@ -271,7 +280,7 @@ function joinarr () {
 # Exit codes (available from $?): 0 on success, 1 if the element could not be found
 #####
 function delEl {
-	declare -a arr=("${!2}") # Note: decalre has scope limited to function
+	local -a arr=("${!2}") # Note: decalre has scope limited to function
 	local pos=$(isAt $1 arr[@])
 	if [[ $pos -lt 0 ]]; then echo "${arr[@]}" && return 1; fi
 	local newarr=(${arr[@]:0:$pos} ${arr[@]:$(($pos + 1))})
@@ -286,7 +295,7 @@ function delEl {
 # Exit codes (available from $?): 0 on success, 1 if the element could not be found
 #####
 isAt () {
-	declare -a arr=("${!2}")
+	local -a arr=("${!2}")
 	local e
 	for e in "${!arr[@]}"; do [[ "${arr[$e]}" == "$1" ]] && echo ${e} && return 0; done
 	echo -1
@@ -303,4 +312,52 @@ function voxelspacing () {
 	local vse=${vss:15:-1}
 	local vs=(${vse//, / })
 	echo "${vs[@]}"
+}
+###
+# Return a sorted version of an array
+# Call like sarr=( $(sorted array[@]) )
+###
+function sorted () {
+    local -a arr=("${!1}")
+    local -a sorted
+    readarray -t sorted < <(for a in "${arr[@]}"; do echo "$a"; done | sort)
+    echo "${sorted[@]}"
+}
+#####
+# Splits an array into as equal chunks as possible and returns these.
+# The last chunks will always contain the least elements.
+# Call like:
+#   splitarray returnvarname nchunks array[@]
+# And then iterate over chunks and unpack them like:
+#   for packedchunk in "${returnvarname[@]}"; do
+#       unpackedchunk=( ${packedchunk[@]} )
+#   done
+# Note: Note that you'll have to pass the name of the desired return variable.
+#       Take care not to unpack into the same variable (e.g. packedchunk=( ${packedchunk[@]} )), as this will cause unexpected behaviour.
+#####
+function splitarray () {
+    # catch parameters
+    local retvar=$1
+    local -i nchunks=$2
+    local -a arr=("${!3}")
+    
+    # compute step size and round up (always round up)
+    local -i len=${#arr[@]}
+    local -i step=$(($len / $nchunks)) 
+    if [ "$(($len % $nchunks))" -ne "0" ]; then
+        step=$(($step+1))
+    fi
+    
+    # split array    
+    local collection
+    local chunk
+    local -i i
+    for (( i=0; i<${len}; i+=${step} )); do
+        #chunk=( "${arr[@]:${i}:${step}}" ) # as array
+        chunk="${arr[@]:${i}:${step}}" # as string
+        collection=( "${collection[@]}" "${chunk}" ) # array of fake arrays (strings containing space-separated elements)
+    done
+    
+    # return chunks by referenced variable assignment
+    eval "$retvar=(\"\${collection[@]}\")"
 }
