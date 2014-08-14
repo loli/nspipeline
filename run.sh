@@ -145,9 +145,12 @@ function makeconfigs () {
     for((i=0;i<${nhosts};i++)); do
         local chunks
     
-        # copy config files
+        # generate config file
         local cnf=".config_${HOSTS[$i]}.sh"
-        runcond "cp config.sh ${cnf}"
+        echo "# Dedicated configuration file for ${HOSTS[$i]}" > ${cnf}
+        echo "# $(date +"%D %T")" >> ${cnf}
+        echo "# auto generated / can be safely removed after +/- 10s" >> ${cnf}
+        echo "" >> ${cnf}
     
         # split and redistribute sc_apply_images array
         echo "declare -A sc_apply_images=( \\" >> "${cnf}"
@@ -216,7 +219,7 @@ function rundistributed () {
         else
             local _err=${err}_${HOSTS[$i]}
         fi
-        local rcmd="cd ${CWD}; nohup ${cmd} > ${_log} 2> ${_err} < /dev/null & echo \$!"
+        local rcmd="cd ${CWD}; nohup ${cmd} CUSTOMCONFIG=.config_${HOSTS[$i]}.sh > ${_log} 2> ${_err} < /dev/null & echo \$!"
         
         # execute command remotely and catch return value as array
         log 1 "Command: \"${rcmd}\" / Host: \"ssh ${USER}@${HOSTS[$i]}\"" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
@@ -240,7 +243,7 @@ function rundistributed () {
                 unset pids[$i]
             fi
         done
-        sleep 60
+        sleep 2
     done
     echo ""
     
@@ -255,7 +258,7 @@ loglevel=1
 #segmentations
 #sequencespace
 #sequencesegmentations
-skullstripped
+#skullstripped
 #biasfieldcorrected
 #intensitrangestandardization
 #features

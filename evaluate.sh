@@ -29,7 +29,7 @@ tmpdir=`mktemp -d`
 for gtsettrain in ${gtsets[@]}; do
     
     # revert segmentation to original space for evaluation
-    if [[ -z "$SEQUENCESPACEONLY" ]];then
+    if ! [ "$SEQUENCESPACEONLY" = true ];then
         log 2 "Reverting segmentations...." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
         parallelize revert ${threadcount} allimages[@]
     fi
@@ -38,7 +38,7 @@ for gtsettrain in ${gtsets[@]}; do
 
         log 2 "#### EVAL SEGM CREATED WITH GT \"${gtsettrain}\" USING GT \"${gtseteval}\" ####" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 
-        if [[ -z "$SEQUENCESPACEONLY" ]];then
+        if ! [ "$SEQUENCESPACEONLY" = true ];then
             log 2 "Evaluating in original space..." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
             runcond "${scripts}/evaluate_segmentations.py ${tmpdir}/s{}.${imgfiletype} ${segmentations}/${gtseteval}/{}.${imgfiletype} ${tmpdir}/m{}.${imgfiletype} $(joinarr " " ${allimages[@]})"
         fi

@@ -57,9 +57,8 @@ minimallesionsize=1500
 ##
 # build a global flat sorted allimages variable
 function makeallimages () {
-    allimages="${sc_apply_images[@]}"
     local sorted
-    readarray -t sorted < <(for a in ${allimages[@]}; do echo "$a"; done | sort)
+    readarray -t sorted < <(for a in ${sc_apply_images[@]}; do echo "$a"; done | sort)
     allimages=( ${sorted[@]} )
 }
 # build a custom, hidden feature config file for each sequence combinations
@@ -75,6 +74,17 @@ function makecustomfeatureconfigs () {
         echo "${string}" >> "${sc_featurecnf}"
     done
 }
+# loads a personal config file if the appropriate command line arguments are encountered
+# call like: source "$(parsecustomconfig $@)"
+# pass custom config to a script with "CUSTOMCONFIG=<file>" argument; only first such argument is considered
+function parsecustomconfig () {
+    local -a args=("${!1}")
+    local arg
+    for arg in "$@"; do
+        [ "${arg:0:13}" == "CUSTOMCONFIG=" ] && echo "${arg:13}" && return
+    done
+    echo "/dev/null"
+}
 
 ##
 # Config processing
@@ -83,6 +93,12 @@ function makecustomfeatureconfigs () {
 makeallimages
 # collect the sequence combination set ids in one variable
 sc_ids=( "${!sc_apply_images[@]}" )
+
+##
+# Loads a personal config file to overwrite this config file if supplied to the including script via the commandline
+# @see parsecustomconfig function above
+##
+source "$(parsecustomconfig $@)"
 
 ##
 # Space for scripted config changes (created automatically)
