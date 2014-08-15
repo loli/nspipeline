@@ -25,7 +25,7 @@ log 2 "Extracting the features" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 makecustomfeatureconfigs
 for scid in "${!sc_train_brainmasks[@]}"; do
     basesequence=${sc_train_brainmasks[$scid]}
-    images=( ${sc_test_images[$scid]} )
+    images=( ${sc_train_images[$scid]} )
     
     mkdircond ${sequencefeatures}/${basesequence}
         

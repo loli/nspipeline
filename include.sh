@@ -22,14 +22,6 @@
 # include the shared config file
 source $(dirname $0)/config.sh
 
-# conditional loading of host-specific replacement config file
-#!TODO: DANGEROUS! MASKS CONFIG FILE! BETTER PASS THEM BY HAND OR VARIABLE!
-_hn=`hostname`
-if [ -f ".config_${_hn}.sh" ]; then
-    source $(dirname $0)/.config_${_hn}.sh
-fi
-
-
 # folders
 originals="00original/"
 sequencespace="01sequencespace/"
@@ -57,7 +49,7 @@ imgfiletype="nii.gz"
 threadcount=6
 
 # logging
-loglevel=2 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
+loglevel=1 # 1=debug, 2=info, 3=warning, 4=err, 5+=silent
 logprefixes=('DEBUG' 'INFO' 'WARNING' 'ERROR')
 logprintlocation=false # true | false to print the location from where the log was triggered
 

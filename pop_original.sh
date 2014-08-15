@@ -54,14 +54,14 @@ function make_adc_map () {
 }
 
 ###
-# Link all the sequences of a case
+# Prepare all the sequences of a case
 ###
-function link_case () {
+function prepare_case () {
 
 	srcdir=$1
 	idx=$2
 
-	log 2 "Linking case ${idx} from ${srcdir}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+	log 2 "Preparing case ${idx} from ${srcdir}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	mkdircond "${originals}/${idx}"
 
 	for s in "${sequencestolink[@]}"; do
@@ -76,7 +76,7 @@ function link_case () {
 
 		# if source file exists
 		if [ -f "${srcfile}" ]; then		
-			log 1 "Copying, to float62 and metadata correction for ${srcfile} to ${trgfile}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+			log 1 "Copying, to float64 and metadata correction for ${srcfile} to ${trgfile}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 			# copy and convert datatype to float64
 			runcond "${scripts}/tofloat64.py ${srcfile} ${trgfile}"
 			# correct nifit orientation metadata in-place
@@ -92,27 +92,45 @@ function link_case () {
 	done
 }
 
+##
+# Checks whether at least one target image already exists
+##
+function check_existance () {
+    for i in "${allimages[@]}"; do
+        for s in "${sequencestolink[@]}"; do
+            [ -f "${originals}/${i}/${s}.${imgfiletype}" ] && echo "1" && return
+        done
+    done
+    echo "0"
+}
+
 # main code
+log 1 "Checking existance of target images" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+if [[ "$(check_existance)" -eq "1" ]]; then
+    log 3 "At least one of the target images is already in existance. Since consistency cannot be guaranteed otherwise, the execution of this script is skipped." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+    exit
+fi
+
 log 2 "Copying / converting images and correcting metadata" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for i in "${allimages[@]}"; do
 	if test "${c01indicesmapping[${i}]+isset}"; then
-		link_case "${c01dir}/${c01indicesmapping[${i}]}" "${i}"
+		prepare_case "${c01dir}/${c01indicesmapping[${i}]}" "${i}"
 	elif test "${c02indicesmapping[${i}]+isset}"; then
-		link_case "${c02dir}/${c02indicesmapping[${i}]}" "${i}"
+		prepare_case "${c02dir}/${c02indicesmapping[${i}]}" "${i}"
 	else
-		log 3 "No candidate for case id ${i} found in any of the collections. Please check your 'allimages' array. Skipping." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
+		log 3 "No candidate for case id ${i} found in any of the collections. Please check your 'allimages' array. Skipping case." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 	fi
 done
 
 log 2 "Flipping images of every second case in-place along the mid-saggital plane" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 for (( i = 1 ; i < ${#allimages[@]} ; i+=2 )) do
-	for s in "${sequencestolink[@]}"; do
-		f="${originals}/${allimages[$i]}/${s}.${imgfiletype}"
-		if [ -e ${f} ]; then
-			lnrealize "${f}"
-			runcond "${scripts}/flip.py ${f} ${sequencesflipdims[${s}]}"
-		fi
-	done
+    for s in "${sequencestolink[@]}"; do
+	    f="${originals}/${allimages[$i]}/${s}.${imgfiletype}"
+	    if [ -e ${f} ]; then
+		    lnrealize "${f}"
+		    runcond "${scripts}/flip.py ${f} ${sequencesflipdims[${s}]}"
+	    fi
+    done
 done
 
 log 2 "Done." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"

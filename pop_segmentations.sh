@@ -30,17 +30,27 @@ declare -A c02indicesmapping=(	["30"]="02" ["31"]="08" ["32"]="11" ["33"]="13" [
 				["40"]="30" ["41"]="31" ["42"]="34" ["43"]="47" ["44"]="55" ["45"]="57" )
 
 
+##
+# Checks whether at least one target image already exists
+##
+function check_existance () {
+    for i in "${allimages[@]}"; do
+        [ -f "${segmentations}/${gtset}/${i}.${imgfiletype}" ] && echo "1" && return
+    done
+    echo "0"
+}
+
 # main code
 for gtset in "${gtsets[@]}"; do
     log 2 "Processing ground truth set ${gtset}" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
     
-    srcdir=${gtsources[$gtset]}
-    mkdircond ${segmentations}/${gtset}
-    
-    if [ -e "${segmentations}/${gtset}/${allimages[0]}.${imgfiletype}" ]; then
+    if [[ "$(check_existance)" -eq "1" ]]; then
         log 3 "Folder ${segmentations}/${gtset} already contains files. Assuming done and skipping complete ground truth set as otherwise a double-flip might occur." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
         continue
     fi
+    
+    srcdir=${gtsources[$gtset]}
+    mkdircond ${segmentations}/${gtset}
     
     log 2 "Copying ground truth images" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
     for i in "${allimages[@]}"; do
