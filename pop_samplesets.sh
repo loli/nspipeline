@@ -14,7 +14,7 @@ source $(dirname $0)/include.sh
 # functions
 function sample_trainingset () {
 	local i=$1
-	local sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+	local sc_featurecnf=$(getcustomfeatureconfig "${scid}")
 	local _trainimages=( ${sc_train_images[$scid]} )
     local _trainimages=( $(delEl "${i}" _trainimages[@]) )
 	mkdircond ${sequencesamplesets}/${gtset}/${i}

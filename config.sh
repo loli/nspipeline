@@ -61,6 +61,13 @@ function makeallimages () {
     readarray -t sorted < <(for a in ${sc_apply_images[@]}; do echo "$a"; done | sort)
     allimages=( ${sorted[@]} )
 }
+# returns a custom feature config file
+# call like: featurecnf_file=$(getcustomfeatureconfig "${scid}")
+function getcustomfeatureconfig () {
+    local scid=$1
+    local sc_featurecnf="/tmp/.${featurecnf:0: -3}_${scid}.py"
+    echo "${sc_featurecnf}"
+}
 # build a custom, hidden feature config file for each sequence combinations
 function makecustomfeatureconfigs () {
     local scid
@@ -68,7 +75,8 @@ function makecustomfeatureconfigs () {
         local sequences=( ${sc_sequences[$scid]} )
         local sequences_sum=$(joinarr "+" ${sequences[@]})
         local string="features_to_extract = ${sequences_sum}"
-        local sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+        #local sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+        local sc_featurecnf=$(getcustomfeatureconfig "${scid}")
         runcond "cp ${featurecnf} ${sc_featurecnf}"
         #!NOTE: Not very nice, as runcond is omitted. But I didn't find a solution to get the piping working otherwise.
         echo "${string}" >> "${sc_featurecnf}"

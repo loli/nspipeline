@@ -15,7 +15,7 @@ source $(dirname $0)/include.sh
 function extract_features ()
 {
 	local i=$1
-	local sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+	local sc_featurecnf=$(getcustomfeatureconfig "${scid}")
 	mkdircond ${sequencefeatures}/${basesequence}/${i}
 	runcond "${scripts}/extract_features.py ${sequenceintensitrangestandardization}/${basesequence}/${i}/ ${sequencebrainmasks}/${basesequence}/${i}.${imgfiletype} ${sequencefeatures}/${basesequence}/${i}/ ${sc_featurecnf}"
 }

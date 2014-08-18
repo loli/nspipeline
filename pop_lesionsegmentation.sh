@@ -36,7 +36,7 @@ for gtset in "${gtsets[@]}"; do
         log 2 "Applying for ground truth set ${gtset} and seq. configuration ${scid}..." "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
     
         for i in "${images[@]}"; do
-            sc_featurecnf=".${featurecnf:0: -3}_${scid}.py"
+            sc_featurecnf=$(getcustomfeatureconfig "${scid}")
 	        mkdircond ${sequencelesionsegmentation}/${gtset}/${i}   
 	        runcond "${scripts}/apply_rdf.py ${sequenceforests}/${gtset}/${i}.pkl ${sequencefeatures}/${basesequence}/${i}/ ${sequencebrainmasks}/${basesequence}/${i}.nii.gz ${sc_featurecnf} ${sequencelesionsegmentation}/${gtset}/${i}/segmentation.nii.gz ${sequencelesionsegmentation}/${gtset}/${i}/probabilities.nii.gz"
         done
