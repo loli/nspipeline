@@ -9,10 +9,18 @@
 
 ### SETTINGS ###
 #START="forests"
-EVALLOG="logs/eval.sc:brainmask_mix.log"
+EVALLOG="results/standalonerun.log"
 LOGGING=true
 USER="maier"
-HOSTS=("lulatsch" "kermit" "mumpitz" "rumpel")
+HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "piggy" "wolle" "rumpel" "finchen" "yipyip" "hastig" "schorsch" "elmo" "bert")
+# Host notes
+# kermit: elastix and transformix give segmentation fault when reading image; error persists after re-installing elastix from the repostiory; forums suggest that it is a known (and unsolved) problem
+# kruemel: uses mastmeyers installation of medpy, rather than the one from the PYTHONATH; might cause problems in some configurations; furthermore, my sklearn is shaded by local installation
+# the slowest, in order from slow to slower: tiffy < piggy < rumpel < mumpitz
+#HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "piggy" "wolle" "mumpitz" "rumpel" "finchen" "kruemel" "yipyip" "hastig" "schorsch" "elmo" "bert") # all
+#HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "kermit" "piggy" "wolle") # bvlab
+#HOSTS=("mumpitz" "rumpel" "finchen" "kruemel" "yipyip" "hastig" "schorsch") # happy users
+#HOSTS=("elmo" "bert") # bad mood users
 
 ### INCLUDES ###
 source $(dirname $0)/include.sh
@@ -45,10 +53,10 @@ function runcondlogdistributed () {
     fi
 }
 
-function originals () {
+function original () {
     log 2 "### ORIGINALS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
-    # note sure if possible to execute distributedly    
-    runcondlog "./pop_originals.sh" "originals"
+    # note sure if possible to execute distributedly
+    runcondlog "./pop_original.sh" "originals"
     log 2 "### ORIGINALS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 }
 
@@ -118,7 +126,7 @@ function evaluation () {
 function segmentations () {
     log 2 "### SEGMENTATIONS: start ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
     # note sure if possible to execute distributedly
-    runcondlog "./pop_segmentations.sh" "segmentations "
+    runcondlog "./pop_segmentations.sh" "segmentations"
     log 2 "### SEGMENTATIONS: done ###" "[$BASH_SOURCE:$FUNCNAME:$LINENO]"
 }
 
@@ -243,7 +251,7 @@ function rundistributed () {
                 unset pids[$i]
             fi
         done
-        sleep 2
+        sleep 5
     done
     echo ""
     
@@ -252,9 +260,9 @@ function rundistributed () {
 }
 
 ### MAIN ###
-loglevel=1
+logelevel=2
 #createfolderstructure
-#originals
+#original
 #segmentations
 #sequencespace
 #sequencesegmentations
@@ -264,6 +272,6 @@ loglevel=1
 #features
 #samplesets
 #forests
-#lesionsegmentation
-#evaluation
+lesionsegmentation
+evaluation
 

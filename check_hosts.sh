@@ -5,7 +5,8 @@
 ####
 
 # host list
-HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "kermit" "piggy" "wolle") # bvlab
+HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "piggy" "wolle" "mumpitz" "rumpel" "finchen" "kruemel" "yipyip" "hastig" "schorsch" "elmo" "bert") # all
+#HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "kermit" "piggy" "wolle") # bvlab
 #HOSTS=("mumpitz" "rumpel" "finchen" "kruemel" "yipyip" "hastig" "schorsch") # happy users
 #HOSTS=("elmo" "bert") # bad mood users
 
