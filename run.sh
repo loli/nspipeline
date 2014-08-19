@@ -12,7 +12,7 @@
 EVALLOG="results/standalonerun.log"
 LOGGING=true
 USER="maier"
-HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "piggy" "wolle" "rumpel" "finchen" "yipyip" "hastig" "schorsch" "elmo" "bert")
+HOSTS=("tiffy" "bibo" "oskar" "lulatsch" "piggy" "wolle" "yipyip" "hastig" "bert")
 # Host notes
 # kermit: elastix and transformix give segmentation fault when reading image; error persists after re-installing elastix from the repostiory; forums suggest that it is a known (and unsolved) problem
 # kruemel: uses mastmeyers installation of medpy, rather than the one from the PYTHONATH; might cause problems in some configurations; furthermore, my sklearn is shaded by local installation
@@ -261,17 +261,17 @@ function rundistributed () {
 
 ### MAIN ###
 logelevel=2
-#createfolderstructure
-#original
-#segmentations
-#sequencespace
-#sequencesegmentations
-#skullstripped
-#biasfieldcorrected
-#intensitrangestandardization
-#features
-#samplesets
-#forests
+createfolderstructure
+original
+segmentations
+sequencespace
+sequencesegmentations
+skullstripped
+biasfieldcorrected
+intensitrangestandardization
+features
+samplesets
+forests
 lesionsegmentation
 evaluation
 
