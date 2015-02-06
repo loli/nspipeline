@@ -58,6 +58,36 @@ PD = [
 	('PD', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False) #11 bins, 15*2=30mm region
 ]
 
-features_to_extract = T2 + FLAIR + T1mprage + T1mprageCE + PD
+PM_WM = [
+	('PM_WM', intensities, [], False),
+	('PM_WM', local_mean_gauss, [3], True),
+	('PM_WM', local_mean_gauss, [5], True),
+	('PM_WM', local_mean_gauss, [7], True),
+	('PM_WM', local_histogram, [11, 'image', (0, 100), 5, None, None, 'ignore', 0], False), #11 bins, 5*2=10mm region
+	('PM_WM', local_histogram, [11, 'image', (0, 100), 10, None, None, 'ignore', 0], False), #11 bins, 10*2=20mm region
+	('PM_WM', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False) #11 bins, 15*2=30mm region
+]
+
+PM_GM = [
+	('PM_GM', intensities, [], False),
+	('PM_GM', local_mean_gauss, [3], True),
+	('PM_GM', local_mean_gauss, [5], True),
+	('PM_GM', local_mean_gauss, [7], True),
+	('PM_GM', local_histogram, [11, 'image', (0, 100), 5, None, None, 'ignore', 0], False), #11 bins, 5*2=10mm region
+	('PM_GM', local_histogram, [11, 'image', (0, 100), 10, None, None, 'ignore', 0], False), #11 bins, 10*2=20mm region
+	('PM_GM', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False) #11 bins, 15*2=30mm region
+]
+
+PM_CSF = [
+	('PM_CSF', intensities, [], False),
+	('PM_CSF', local_mean_gauss, [3], True),
+	('PM_CSF', local_mean_gauss, [5], True),
+	('PM_CSF', local_mean_gauss, [7], True),
+	('PM_CSF', local_histogram, [11, 'image', (0, 100), 5, None, None, 'ignore', 0], False), #11 bins, 5*2=10mm region
+	('PM_CSF', local_histogram, [11, 'image', (0, 100), 10, None, None, 'ignore', 0], False), #11 bins, 10*2=20mm region
+	('PM_CSF', local_histogram, [11, 'image', (0, 100), 15, None, None, 'ignore', 0], False) #11 bins, 15*2=30mm region
+]
+
+features_to_extract = T2 + FLAIR + T1mprage + PD
 
 

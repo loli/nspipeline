@@ -2,7 +2,7 @@
 all available
 
 # pre-processing
-spacing=native (FLAIR, PD, T1mprageCE, T1mprage, T2.nii.gz) [1x1x1 might also work?]
+spacing=1x1x1 (FLAIR, PD, T1mprage, T2)
 samples=500.000
 features=all
 
@@ -20,7 +20,7 @@ size_threshold=0 (0ml)
 1. sequencespace: not applied (original space)
 2. skullstripping: use T1mprage
 3. biasfieldcorrection: individual per image
-4. intensityrangestd: not applied (too many outliers)
+4. intensityrangestd: simple zero-mean, one-std
 5. features: all from all; centerdistance only from T2
 6. samplesets:
 

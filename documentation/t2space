@@ -1,3 +1,0 @@
-All sequences are rigidly registered to the T2 volume.
-
-Since DW and ADC share the same space, only one of these spectra has to be registered. We empirically chose DW for the registration, as random samples have shown the ADC based registration to be severly off in some cases (e.g. 13).

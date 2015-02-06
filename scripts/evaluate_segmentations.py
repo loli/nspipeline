@@ -66,10 +66,10 @@ def main():
     if not numpy.all(mask):
         print 'WARNING: Average values only computed on {} of {} cases!'.format(numpy.count_nonzero(mask), mask.size)
 
-        print 'DM  average\t{} +/- {} (Median: {})'.format(numpy.asarray(dcs)[mask].mean(), numpy.asarray(dcs)[mask].std(), numpy.median(numpy.asarray(dcs)[mask]))
-        print 'TPR  average\t{} +/- {} (Median: {})'.format(numpy.asarray(tprs)[mask].mean(), numpy.asarray(tprs)[mask].std(), numpy.median(numpy.asarray(tprs)[mask]))
-        print 'FPR  average\t{} +/- {} (Median: {})'.format(numpy.asarray(fprs)[mask].mean(), numpy.asarray(fprs)[mask].std(), numpy.median(numpy.asarray(fprs)[mask]))
-        print 'ASSD average\t{} +/- {} (Median: {})'.format(numpy.asarray(assds)[mask].mean(), numpy.asarray(assds)[mask].std(), numpy.median(numpy.asarray(assds)[mask]))
+    print 'DM  average\t{} +/- {} (Median: {})'.format(numpy.asarray(dcs)[mask].mean(), numpy.asarray(dcs)[mask].std(), numpy.median(numpy.asarray(dcs)[mask]))
+    print 'TPR  average\t{} +/- {} (Median: {})'.format(numpy.asarray(tprs)[mask].mean(), numpy.asarray(tprs)[mask].std(), numpy.median(numpy.asarray(tprs)[mask]))
+    print 'FPR  average\t{} +/- {} (Median: {})'.format(numpy.asarray(fprs)[mask].mean(), numpy.asarray(fprs)[mask].std(), numpy.median(numpy.asarray(fprs)[mask]))
+    print 'ASSD average\t{} +/- {} (Median: {})'.format(numpy.asarray(assds)[mask].mean(), numpy.asarray(assds)[mask].std(), numpy.median(numpy.asarray(assds)[mask]))
 
 def wdc(x):
     return dc(*x)
